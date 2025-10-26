@@ -23,14 +23,14 @@ export default function Home() {
       colorFrom: "green-500",
       colorTo: "green-600",
     },
-    {
-      title: "Pengelolaan Program Smart Eco Campus",
-      description: "Memimpin transformasi menuju kampus digital yang hijau dan cerdas.",
-      progress: 20,
-      icon: "trending-up",
-      colorFrom: "purple-500",
-      colorTo: "purple-600",
-    }
+    // {
+    //   title: "Pengelolaan Program Smart Eco Campus",
+    //   description: "Memimpin transformasi menuju kampus digital yang hijau dan cerdas.",
+    //   progress: 20,
+    //   icon: "trending-up",
+    //   colorFrom: "purple-500",
+    //   colorTo: "purple-600",
+    // }
   ]
   useEffect(() => {
     // Ganti icon Feather
