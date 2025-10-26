@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Awareness | SkillUp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .option-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .correct-answer {
+            background-color: #ECFDF5;
+            border-color: #10B981;
+        }
+        .wrong-answer {
+            background-color: #FEF2F2;
+            border-color: #EF4444;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="course.html" class="text-gray-500 hover:text-blue-600">
+                    <i data-feather="arrow-left"></i>
+                </a>
+                <div class="w-full bg-gray-200 rounded-full h-1.5 ml-2" style="max-width: 120px;">
+                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 60%"></div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center text-blue-600 font-medium">
+                    <i data-feather="zap" class="mr-1"></i>
+                    <span>30 XP</span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i data-feather="user" class="text-blue-600"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Lesson Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Lesson Title -->
+        <div class="mb-8 text-center">
+            <span class="text-sm text-blue-600 font-medium">Modul 3 • Pengembangan/Penambahan Sarana dan Prasarana</span>
+            <h1 class="text-2xl font-bold text-gray-800 mt-1">Pengelolaan Usulan Pengadaan Sarana Dan Prasarana</h1>
+        </div>
+
+        <!-- Practice Question -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Soal Latihan</h2>
+                <span class="text-sm bg-blue-100 text-blue-600 px-2 py-1 rounded">1/5</span>
+            </div>
+            
+            <p class="mb-6">Jika anggaran tidak memadai untuk pengadaan sarpras, langkah apa yang dilakukan setelah seleksi urgensi?</p>
+            
+            <div class="space-y-3 mb-8" id="options-container">
+                <div class="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer" onclick="selectOption(this, false)">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-3"></div>
+                        <span>Mencari pinjaman dana</span>
+                    </div>
+                </div>
+                <div class="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer" onclick="selectOption(this, false)">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-3"></div>
+                        <span>Menunda semua pembelian</span>
+                    </div>
+                </div>
+                <div class="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer" onclick="selectOption(this, true)">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-3"></div>
+                        <span>Membuat skala prioritas</span>
+                    </div>
+                </div>
+                <div class="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer" onclick="selectOption(this, false)">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-3"></div>
+                        <span>Membeli barang bekas</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="next-btn" class="w-full py-3 bg-gray-200 text-gray-500 rounded-lg font-medium cursor-not-allowed" disabled>
+                Cek Jawaban
+            </button>
+            
+            <div id="feedback" class="hidden mt-4 p-4 rounded-lg">
+                <div class="flex items-start">
+                    <i data-feather="check-circle" class="text-green-500 mr-3 mt-0.5 flex-shrink-0 hidden" id="correct-icon"></i>
+                    <i data-feather="x-circle" class="text-red-500 mr-3 mt-0.5 flex-shrink-0 hidden" id="wrong-icon"></i>
+                    <div>
+                        <h3 class="font-medium mb-1 hidden" id="feedback-title"></h3>
+                        <p class="text-sm" id="feedback-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg md:hidden">
+        <div class="flex justify-around">
+            <a href="index.html" class="p-4 text-gray-500">
+                <i data-feather="home"></i>
+            </a>
+            <a href="course.html" class="p-4 text-gray-500">
+                <i data-feather="book"></i>
+            </a>
+            <a href="#" class="p-4 text-blue-600">
+                <i data-feather="award"></i>
+            </a>
+            <a href="#" class="p-4 text-gray-500">
+                <i data-feather="user"></i>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        feather.replace();
+        
+        let selectedOption = null;
+        let isCorrect = false;
+        
+        function selectOption(optionElement, correct) {
+            // Reset all options
+            document.querySelectorAll('.option-card').forEach(option => {
+                option.classList.remove('border-blue-500', 'bg-blue-100');
+                option.querySelector('div div').classList.remove('border-blue-500', 'bg-blue-100');
+                option.querySelector('div div').classList.add('border-gray-300');
+            });
+            
+            // Select this option
+            optionElement.classList.add('border-blue-500', 'bg-blue-100');
+            optionElement.querySelector('div div').classList.remove('border-gray-300');
+            optionElement.querySelector('div div').classList.add('border-blue-500', 'bg-blue-100');
+            
+            selectedOption = optionElement;
+            isCorrect = correct;
+            
+            // Enable the check answer button
+            document.getElementById('next-btn').disabled = false;
+            document.getElementById('next-btn').classList.remove('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
+            document.getElementById('next-btn').classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+            document.getElementById('next-btn').textContent = 'Check Answer';
+        }
+        
+        document.getElementById('next-btn').addEventListener('click', function() {
+            if (this.textContent === 'Check Answer') {
+                // Show feedback
+                const feedback = document.getElementById('feedback');
+                const feedbackTitle = document.getElementById('feedback-title');
+                const feedbackText = document.getElementById('feedback-text');
+                const correctIcon = document.getElementById('correct-icon');
+                const wrongIcon = document.getElementById('wrong-icon');
+                
+                feedback.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedback.classList.add('bg-green-50', 'border', 'border-green-200');
+                    feedbackTitle.classList.remove('hidden');
+                    feedbackTitle.textContent = 'Correct!';
+                    feedbackTitle.classList.add('text-green-800');
+                    feedbackText.textContent = 'Great job! You recognized this as a phishing attempt. Always report suspicious emails to your security team.';
+                    correctIcon.classList.remove('hidden');
+                    wrongIcon.classList.add('hidden');
+                    
+                    // Mark correct answer
+                    selectedOption.classList.add('correct-answer');
+                    selectedOption.classList.remove('border-blue-500', 'bg-blue-100');
+                } else {
+                    feedback.classList.add('bg-red-50', 'border', 'border-red-200');
+                    feedbackTitle.classList.remove('hidden');
+                    feedbackTitle.textContent = 'Not Quite Right';
+                    feedbackTitle.classList.add('text-red-800');
+                    feedbackText.textContent = 'This is a phishing attempt. Never click links or enter credentials in response to unsolicited emails.';
+                    wrongIcon.classList.remove('hidden');
+                    correctIcon.classList.add('hidden');
+                    
+                    // Mark wrong answer
+                    selectedOption.classList.add('wrong-answer');
+                    selectedOption.classList.remove('border-blue-500', 'bg-blue-100');
+                    
+                    // Highlight correct answer
+                    document.querySelectorAll('.option-card').forEach(option => {
+                        if (option.onclick && option.onclick.toString().includes('true')) {
+                            option.classList.add('correct-answer');
+                        }
+                    });
+                }
+                
+                this.textContent = 'Continue';
+                this.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                this.classList.add('bg-green-600', 'hover:bg-green-700');
+            } else {
+                // Continue to next question
+                window.location.href = "lesson-quiz.html";
+            }
+        });
+    </script>
+</body>
+</html>
