@@ -1,7 +1,4 @@
-ITSQuizz – AI Question Generator
 
-ITSQuizz adalah aplikasi pembuat pertanyaan otomatis berbasis Flask (Python) di sisi backend dan React + Vite di sisi frontend.
-Model AI yang digunakan adalah Llama 3 (via Ollama) untuk memproses teks dari dokumen PDF dan menghasilkan pertanyaan.
 
 Struktur Proyek
 questionGenerator/
