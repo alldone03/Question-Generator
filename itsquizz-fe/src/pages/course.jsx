@@ -1,45 +1,70 @@
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
 
 
 export default function Course() {
+  const { state } = useLocation();
 
 
-  const modulPelatihan = [
-    {
-      title: "Pengembangan/Penambahan Sarana dan Prasarana",
-      modulePelatihan: [{
-        title: "Pengenalan Sarana dan Prasarana",
-        duration: "15 min",
-        xp: "20 XP",
-        status: "completed",
+  const modulPelatihan = [{
+    title: `Level Beginner ${state.title}`,
+    duration: "15 min",
+    xp: "20 XP",
+    status: "completed",
 
-      }, {
-        title: "Perencanaan Sarana dan Prasarana",
-        duration: "20 min",
-        xp: "25 XP",
-        status: "completed",
-      }, {
-        title: "Pengembangan/Penambahan Sarana dan Prasarana",
-        duration: "25 min",
-        xp: "30 XP",
-        status: "current",
+  }, {
+    title: ` Level Intermediete ${state.title}`,
+    duration: "20 min",
+    xp: "25 XP",
+    status: "current",
+  },
+  {
+    title: `Level Expert ${state.title}`,
+    duration: "25 min",
+    xp: "30 XP",
+    status: "locked",
+  },
 
-      },
-      {
-        title: "Pemeliharaan Sarana dan Prasarana",
-        duration: "30 min",
-        xp: "35 XP",
-        status: "locked",
-      }
 
-      ]
+  ]
+
+  const handleIconModulePelatihan = (status) => {
+    if (status == "locked") {
+      return (<>
+        <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+
+        </div>
+      </>);
+    } else if (status == "current") {
+      return (<>
+        <div className=" w-10 h-10 rounded-full bg-green-200 flex items-center justify-center mr-4">
+
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+        </div>
+      </>);
+    } else if (status == "completed") {
+      return (<>
+        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </div>
+
+      </>);
     }
+  }
 
 
-  ];
 
+    ;
 
+  const navigate = useNavigate();
   return (
     <>
       <div>
@@ -47,19 +72,14 @@ export default function Course() {
         <header className="bg-white shadow-sm">
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <a href="index.html" className="text-gray-500 hover:text-indigo-600">
-                <i data-feather="arrow-left" />
-              </a>
-              <h1 className="text-xl font-bold text-gray-800 ml-2">Pengelolaan Gedung dan Ruang Terbuka Hijau</h1>
+              <div onClick={() => { navigate(-1) }} className="text-gray-500  hover:text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </div>
+              <h1 className="text-xl font-bold text-gray-800 ml-2">{state.title}</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <i data-feather="star" className="text-yellow-400 mr-1" />
-                <span className="font-medium">45%</span>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                <i data-feather="user" className="text-indigo-600" />
-              </div>
             </div>
           </div>
         </header>
@@ -70,132 +90,45 @@ export default function Course() {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-800">Progres Pelatihan</h2>
-                <span className="text-sm text-gray-500">3/7 Modul Selesai</span>
+                <span className="text-sm text-gray-500">{modulPelatihan.filter(modul => modul.status === "completed").length}/{modulPelatihan.length} Modul Selesai</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '45%' }} />
+                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: (modulPelatihan.filter(modul => modul.status === "completed").length / modulPelatihan.length) * 100 + "%" }} />
               </div>
             </div>
           </section>
           {/* Current Lesson */}
-          {/* <section className="mb-8">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <span className="text-sm font-medium">Pelajaran Saat Ini</span>
-                  <h2 className="text-xl font-semibold mt-1">Pengelolaan Usulan Pengadaan Sarana Dan Prasarana </h2>
-                </div>
-                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <i data-feather="shield" className="w-6 h-6" />
-                </div>
-              </div>
-              <p className="mb-6">Pelajari cara mengelola sarana dan prasarana</p>
-              <button className="w-full py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-opacity-90 transition flex items-center justify-center">
-                <i data-feather="play" className="mr-2" />
-                Lanjutkan Pelatihan
-              </button>
-            </div>
-          </section> */}
           {/* Modules */}
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Modul Pelatihan</h2>
             <div className="space-y-3">
               {/* Module 1 (Completed) */}
               {
-                
+                modulPelatihan.map((item, index) => (
+                  <>
+                    {<Link to={"/lesson"} key={index}
+                      state={{ title: item.title, description: item.description }}
+                      className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between hover:transform hover:scale-105 hover:shadow-lg">
+                      <div className="flex items-center">
+                        <div >
+                          {handleIconModulePelatihan(item.status)}
+                        </div>
+                        <div className="flex flex-col items-start">
+                          <h3 className="font-medium text-gray-800">{item.title}</h3>
+                          <p className="text-sm text-gray-500">{item.duration} • {item.xp}</p>
+                        </div>
+                      </div>
+
+                    </Link>}
+                  </>
+                ))
               }
-              <div className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-4">
-                    <i data-feather="check" className="text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800">Pengenalan Sarana dan Prasarana</h3>
-                    <p className="text-sm text-gray-500">15 min • 20 XP</p>
-                  </div>
-                </div>
-                <i data-feather="chevron-right" className="text-gray-400" />
-              </div>
-              {/* Module 2 (Completed) */}
-              <div className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-4">
-                    <i data-feather="check" className="text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800">	Perencanaan Sarana dan Prasarana</h3>
-                    <p className="text-sm text-gray-500">20 min • 25 XP</p>
-                  </div>
-                </div>
-                <i data-feather="chevron-right" className="text-gray-400" />
-              </div>
-              {/* Module 3 (Current) */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg shadow-sm p-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                    <span className="text-blue-600 font-medium">3</span>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800">Pengembangan/Penambahan Sarana dan Prasarana</h3>
-                    <p className="text-sm text-gray-500">25 min • 30 XP</p>
-                  </div>
-                </div>
-                <i data-feather="chevron-right" className="text-blue-400" />
-              </div>
-              {/* Module 4 (Locked) */}
-              <div className="bg-gray-50 rounded-lg shadow-sm p-4 flex items-center justify-between opacity-75">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-4">
-                    <i data-feather="lock" className="text-gray-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-500">Pemeliharaan Sarana dan Prasarana</h3>
-                    <p className="text-sm text-gray-400">Selesaikan Pelatihan Sebelumnya untuk Membuka</p>
-                  </div>
-                </div>
-                <i data-feather="chevron-right" className="text-gray-400" />
-              </div>
+
+
+
             </div>
           </section>
-          {/* Quiz Preview */}
-          {/* <section>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Quizz Latihan</h2>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium text-gray-800">Contoh Pertanyaan</h3>
-              </div>
-              <p className="mb-6">pemeliharaan sarana dan prasarana harus dilakukan secara...</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-                <div className="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer">
-                  <div className="flex items-center">
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 mr-3" />
-                    <span>Insidental dan saat ada laporan kerusakan</span>
-                  </div>
-                </div>
-                <div className="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer">
-                  <div className="flex items-center">
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 mr-3" />
-                    <span>Tahunan dan saat anggaran tersedia</span>
-                  </div>
-                </div>
-                <div className="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer">
-                  <div className="flex items-center">
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 mr-3" />
-                    <span>Teratur, sistematis, dan terus menerus</span>
-                  </div>
-                </div>
-                <div className="option-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition cursor-pointer">
-                  <div className="flex items-center">
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 mr-3" />
-                    <span>Saat ada waktu luang dari teknisi</span>
-                  </div>
-                </div>
-              </div>
-              <button className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                Mulai Latihan Quizz
-              </button>
-            </div>
-          </section> */}
+
         </main>
         {/* Bottom Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg md:hidden">

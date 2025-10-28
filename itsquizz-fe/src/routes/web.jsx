@@ -1,20 +1,41 @@
 import Course from "../pages/course"
 import Home from "../pages/home"
 import Lesson from "../pages/lesson"
+import LoginPage from "../pages/login"
 import Quiz from "../pages/quiz"
+import RegisterPage from "../pages/register"
 import ResultPage from "../pages/resultPage"
+import ProtectedRoute from "./ProtectedRoute"
 
 
 
 const routes = [
+
     {
-        path: "/",
-        element: <Home />,
-        name: "home",
+        path: "/login",
+        element: <LoginPage />,
+        name: "login",
     },
     {
+        path: "/register",
+        element: <RegisterPage />,
+        name: "register",
+    },
+    {
+        path: "/",
+        element:
+            <ProtectedRoute>
+                <Home />
+            </ProtectedRoute>,
+        name: "home",
+    },
+
+    {
         path: "/lesson",
-        element: <Lesson />,
+        element:
+            <ProtectedRoute>
+                <Lesson />
+            </ProtectedRoute>,
         name: "lesson",
     }
     , {
@@ -24,12 +45,16 @@ const routes = [
     }
     , {
         path: "/course",
-        element: <Course />,
+        element: <ProtectedRoute>
+            <Course />
+        </ProtectedRoute>,
         name: "course",
     }
     , {
         path: "/result",
-        element: <ResultPage />,
+        element: <ProtectedRoute>
+            <ResultPage />
+        </ProtectedRoute>,
         name: "result",
     }
 ]
