@@ -1,63 +1,96 @@
-ITSQuizz
+ITSQuizz – AI Question Generator
 
-Aplikasi ITSQuizz adalah sistem pembuat dan pengelola soal otomatis menggunakan LLM (Llama3).
-Proyek ini terdiri dari backend Flask (Python), frontend React (Vite), dan Ollama sebagai model AI lokal.
+ITSQuizz adalah aplikasi pembuat pertanyaan otomatis berbasis Flask (Python) di sisi backend dan React + Vite di sisi frontend.
+Model AI yang digunakan adalah Llama 3 (via Ollama) untuk memproses teks dari dokumen PDF dan menghasilkan pertanyaan.
 
 Struktur Proyek
 questionGenerator/
 │
-├── itsquizz-be/
-│   └── backend.py              # Backend Flask + SentenceTransformer + FAISS
+├── itsquizz-be/               # Backend (Python Flask)
+│   ├── backend.py
+│   └── requirements.txt
 │
-├── itsquizz-fe/
-│   ├── src/                    # Frontend React + Vite
-│   └── package.json
+├── itsquizz-fe/               # Frontend (React + Vite)
+│   ├── package.json
+│   ├── src/
+│   └── ...
 │
-└── run_all.bat                 # Jalankan semua service sekaligus
+└── run_all.bat                # File untuk menjalankan semua service otomatis
 
-1. Persyaratan
+1. Backend (Flask)
 
-Pastikan Anda sudah menginstal:
+Lokasi:
+C:\Users\LENOVO\OneDrive\Desktop\questionGenerator\itsquizz-be\backend.py
 
-Python 3.10+
+Fungsi utama:
 
-Node.js 18+
+Membaca dokumen PDF menggunakan PyPDF2
 
-npm (terinstal otomatis dengan Node.js)
+Mengubah teks menjadi embedding dengan SentenceTransformer
 
-Ollama (https://ollama.ai
-)
+Menyimpan dan mencari embedding dengan FAISS
 
-Model Llama3 (jalankan: ollama pull llama3)
+Melayani permintaan dari frontend melalui Flask API
 
-2. Instalasi Backend
+Mendukung komunikasi lintas domain dengan Flask-CORS
 
-Masuk ke folder backend:
+Library yang digunakan:
+
+from PyPDF2 import PdfReader
+from sentence_transformers import SentenceTransformer
+from flask import Flask, jsonify, request
+import faiss, requests, json, os
+from flask_cors import CORS
+
+
+Menjalankan manual:
 
 cd itsquizz-be
+python backend.py
 
+2. Frontend (React + Vite)
 
-Instal dependensi Python:
+Lokasi:
+C:\Users\LENOVO\OneDrive\Desktop\questionGenerator\itsquizz-fe
 
-pip install flask flask-cors sentence-transformers PyPDF2 faiss-cpu requests
+Teknologi:
 
-3. Instalasi Frontend
+React
 
-Masuk ke folder frontend:
+Vite
+
+Tailwind CSS (opsional)
+
+Komunikasi API ke Flask backend
+
+Menjalankan manual:
 
 cd itsquizz-fe
-
-
-Instal dependensi React:
-
 npm install
+npm run dev
 
-4. Menjalankan Semua Service Otomatis
 
-Gunakan file batch run_all.bat di folder utama:
+Frontend dapat diakses di:
+http://localhost:5173
 
+3. Llama 3 via Ollama
+
+ITSQuizz menggunakan Llama 3 melalui Ollama untuk menghasilkan pertanyaan dari teks dokumen.
+Pastikan Ollama sudah terinstal dan model Llama 3 sudah diunduh.
+
+Menjalankan Ollama secara manual:
+
+ollama serve
+
+
+Menjalankan model Llama 3:
+
+ollama run llama3
+
+4. Jalankan Semua Service Sekaligus
+
+File otomatis:
 C:\Users\LENOVO\OneDrive\Desktop\questionGenerator\run_all.bat
-
 
 Isi file:
 
@@ -66,61 +99,60 @@ echo =====================================
 echo  Menjalankan semua service ITSQuizz
 echo =====================================
 
-REM --- Jalankan Ollama Serve ---
 start "OLLAMA" cmd /k "ollama serve"
 
-REM --- Jalankan Frontend (Vite/React) ---
 cd /d "C:\Users\LENOVO\OneDrive\Desktop\questionGenerator\itsquizz-fe"
 start "FRONTEND" cmd /k "npm run dev"
 
-REM --- Jalankan Backend (Flask) ---
 cd /d "C:\Users\LENOVO\OneDrive\Desktop\questionGenerator\itsquizz-be"
 start "BACKEND" cmd /k "python backend.py"
 
-REM --- Tunggu beberapa detik agar server siap ---
 timeout /t 5 >nul
-
-REM --- Buka otomatis di browser ---
 start "" "http://localhost:5173"
 
 echo Semua service telah dijalankan!
 pause
 
 
-Cukup klik dua kali file run_all.bat, semua service akan otomatis berjalan:
+Cara pakai:
 
-Ollama untuk model Llama3
+Pastikan semua dependency sudah terinstal.
 
-Backend Flask untuk API
+Klik dua kali run_all.bat.
 
-Frontend React (Vite) untuk UI
+Sistem otomatis akan menjalankan:
 
-Browser terbuka otomatis di http://localhost:5173
+Ollama (Llama 3)
 
-5. Arsitektur Singkat
-
-Frontend (Vite + React)
-UI untuk pengguna membuat, mengedit, dan melihat soal.
+Frontend (Vite/React)
 
 Backend (Flask)
 
-Mengambil teks dari file PDF (PyPDF2)
+Membuka browser ke localhost:5173
 
-Membuat embedding (SentenceTransformer)
+5. Persiapan Lingkungan
+Python
+pip install flask flask-cors PyPDF2 sentence-transformers faiss-cpu requests
 
-Menyimpan vector ke FAISS
+Node.js
+npm install
 
-Menghubungkan ke Llama3 untuk menghasilkan soal.
+Ollama + Llama3
 
-Ollama (Llama3)
-Menyediakan model bahasa lokal untuk menghasilkan pertanyaan berbasis konteks PDF.
+Download dan install dari:
+https://ollama.ai
 
 6. Cara Kerja Singkat
 
-Unggah file PDF ke backend.
+Pengguna mengunggah file PDF melalui frontend.
 
-Backend membaca teks dan membuat embedding.
+Backend membaca isi PDF dan membuat embedding teks.
 
-Sistem menggunakan Llama3 untuk membuat pertanyaan.
+Ollama (Llama 3) memproses teks menjadi pertanyaan.
 
-Hasil ditampilkan di frontend React.
+Hasil ditampilkan di frontend.
+
+7. Lisensi
+
+Proyek ini dibuat untuk keperluan penelitian dan pembelajaran.
+Gunakan secara bebas dengan menyertakan kredit kepada pembuat.
