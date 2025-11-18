@@ -106,7 +106,8 @@ export default function Course() {
               {
                 modulPelatihan.map((item, index) => (
                   <>
-                    {<Link to={"/lesson"} key={index}
+                    {<Link to={"/lesson"}
+                      key={index}
                       state={{ title: item.title, description: item.description }}
                       className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between hover:transform hover:scale-105 hover:shadow-lg">
                       <div className="flex items-center">

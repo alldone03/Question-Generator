@@ -3,54 +3,75 @@ from models.user_model import User
 from config.database import db
 from utils.hash import hash_password, verify_password
 
-# Register
+# REGISTER
 def register_user():
     data = request.json
-    
+
     nama = data.get("nama")
     email = data.get("email")
     password = data.get("password")
     jabatan = data.get("jabatan")
 
-    if User.query.filter_by(email=email).first():
+    if not all([nama, email, password, jabatan]):
+        return jsonify({"message": "Semua field wajib diisi"}), 400
+
+    # Gunakan db.session.query, bukan User.query
+    existing_user = db.session.query(User).filter_by(email=email).first()
+    if existing_user:
         return jsonify({"message": "Email sudah terdaftar"}), 400
 
-    new_user = User(
+    user = User(
         nama=nama,
         email=email,
         password=hash_password(password),
         jabatan=jabatan
     )
 
-    db.session.add(new_user)
+    db.session.add(user)
     db.session.commit()
 
-    return jsonify({"message": "User berhasil dibuat"})
+    return jsonify({"message": "User berhasil dibuat"}), 200
 
-# Login
+
+# LOGIN
 def login_user():
     data = request.json
-
     email = data.get("email")
     password = data.get("password")
 
-    user = User.query.filter_by(email=email).first()
+    if not email or not password:
+        return jsonify({"message": "Email dan password wajib diisi"}), 400
+
+    # Gunakan db.session.query
+    user = db.session.query(User).filter_by(email=email).first()
 
     if not user or not verify_password(user.password, password):
         return jsonify({"message": "Email atau password salah"}), 401
 
     session["user_id"] = user.id
 
-    return jsonify({"message": "Login berhasil", "user": user.to_dict()})
+    return jsonify({
+        "message": "Login berhasil",
+        "user": user.to_dict()
+    }), 200
 
-# Logout
+
+# LOGOUT
 def logout_user():
     session.pop("user_id", None)
-    return jsonify({"message": "Logout berhasil"})
+    return jsonify({"message": "Logout berhasil"}), 200
 
-# Status login
+
+# CHECK STATUS
 def check_status():
-    if "user_id" in session:
-        user = User.query.get(session["user_id"])
-        return jsonify({"logged_in": True, "user": user.to_dict()})
-    return jsonify({"logged_in": False})
+    user_id = session.get("user_id")
+
+    if user_id:
+        user = db.session.get(User, user_id)
+        if user:
+            return jsonify({
+                "logged_in": True,
+                "user": user.to_dict()
+            }), 200
+
+    return jsonify({"logged_in": False}), 200

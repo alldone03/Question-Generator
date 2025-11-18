@@ -62,11 +62,24 @@ export default function Home() {
   }, []);
 
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Panggil API logout di Flask
+      await fetch("http://localhost:5000/auth/logout", {
+        method: "POST",
+        credentials: "include", // wajib untuk hapus session
+      });
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      console.log("Gagal logout ke server");
+    }
+
+    // Hapus user dari localStorage
     localStorage.removeItem("user");
+
+    // Arahkan ke login
     navigate("/login");
   };
-
 
   return (
     <>

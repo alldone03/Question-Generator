@@ -25,7 +25,7 @@ export default function RegisterPage() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         setError("");
         setSuccess("");
@@ -53,9 +53,28 @@ export default function RegisterPage() {
 
         setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
-            setSuccess("Registrasi berhasil!");
+        try {
+            const res = await fetch("http://localhost:5000/auth/register", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nama: form.nama,
+                    email: form.email,
+                    password: form.password,
+                    jabatan: form.jabatan,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.message || "Registrasi gagal");
+                setLoading(false);
+                return;
+            }
+
+            setSuccess("Registrasi berhasil");
             setForm({
                 nama: "",
                 email: "",
@@ -63,7 +82,11 @@ export default function RegisterPage() {
                 confirmPassword: "",
                 jabatan: "",
             });
-        }, 1500);
+        } catch (err) {
+            setError(`Tidak dapat terhubung ke server ${err.message}`);
+        }
+
+        setLoading(false);
     };
 
     return (

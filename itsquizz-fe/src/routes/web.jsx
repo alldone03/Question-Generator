@@ -5,7 +5,8 @@ import LoginPage from "../pages/login"
 import Quiz from "../pages/quiz"
 import RegisterPage from "../pages/register"
 import ResultPage from "../pages/resultPage"
-import ProtectedRoute from "./ProtectedRoute"
+import ProtectedRoute from "../middleware/ProtectedRoute"
+import GuestRoute from "../middleware/GuestRoute"
 
 
 
@@ -13,7 +14,10 @@ const routes = [
 
     {
         path: "/login",
-        element: <LoginPage />,
+        element:
+            <GuestRoute>
+                <LoginPage />
+            </GuestRoute>,
         name: "login",
     },
     {

@@ -9,30 +9,59 @@ export default function LoginPage() {
     const navigate = useNavigate();
 
 
-    const handleLogin = (e) => {
+
+    const handleLogin = async (e) => {
         e.preventDefault();
+
+        setError("");
+        setLoading(true);
 
         if (!email || !password) {
             setError("Email dan password wajib diisi");
+            setLoading(false);
             return;
         }
 
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
             setError("Format email tidak valid");
+            setLoading(false);
             return;
         }
 
-        setError("");
-        setLoading(true);
-        localStorage.setItem("user", JSON.stringify({ email }));
+        try {
+            const response = await fetch("http://localhost:5000/auth/login", {
+                method: "POST",
+                credentials: "include",   // WAJIB untuk session Flask
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                }),
+            });
 
-        setTimeout(() => {
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message || "Login gagal");
+                setLoading(false);
+                return;
+            }
+
+            // Simpan user di localStorage
+            localStorage.setItem("user", JSON.stringify(data.user));
+
             setLoading(false);
             navigate("/");
 
-        }, 1500);
+        } catch (error) {
+            setError("Tidak dapat terhubung ke server " + error.message);
+            setLoading(false);
+        }
     };
+
 
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
