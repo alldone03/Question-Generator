@@ -22,7 +22,10 @@ const routes = [
     },
     {
         path: "/register",
-        element: <RegisterPage />,
+        element:
+            <GuestRoute>
+                <RegisterPage />
+            </GuestRoute>,
         name: "register",
     },
     {

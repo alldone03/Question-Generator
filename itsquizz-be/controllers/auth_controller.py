@@ -1,5 +1,5 @@
 from flask import request, session, jsonify
-from models.user_model import User
+from models._1_user_model import User
 from config.database import db
 from utils.hash import hash_password, verify_password
 
