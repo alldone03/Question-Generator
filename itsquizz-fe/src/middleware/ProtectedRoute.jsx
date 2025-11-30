@@ -17,12 +17,13 @@ export default function ProtectedRoute({ children }) {
                 if (data.logged_in) {
                     // sinkronkan localStorage
                     localStorage.setItem("user", JSON.stringify(data.user));
+                    // console.log("User is authenticated:", data.user);
                     setIsAuth(true);
                 } else {
                     localStorage.removeItem("user");
                     setIsAuth(false);
                 }
-            // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line no-unused-vars
             } catch (err) {
                 localStorage.removeItem("user");
                 setIsAuth(false);

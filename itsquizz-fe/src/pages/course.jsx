@@ -1,33 +1,63 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
 
 
 export default function Course() {
+
   const { state } = useLocation();
+  const navigate = useNavigate();
+
+  const [levels, setLevels] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const courseId = state?.course_id;
+
+  useEffect(() => {
+    if (!courseId) return;
+
+    fetchLevels();
+  }, [courseId]);
+
+  const fetchLevels = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/level/${courseId}`);
+      const json = await res.json();
+      setLevels(json || []);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <p className="p-6">Loading...</p>;
 
 
-  const modulPelatihan = [{
-    title: `Level Beginner ${state.title}`,
-    duration: "15 min",
-    xp: "20 XP",
-    status: "completed",
+  const modulPelatihan = levels.map((item, index) => {
+    let status;
+    if (index === 0) status = "completed";
+    else if (index === 1) status = "current";
+    else status = "locked";
 
-  }, {
-    title: ` Level Intermediete ${state.title}`,
-    duration: "20 min",
-    xp: "25 XP",
-    status: "current",
-  },
-  {
-    title: `Level Expert ${state.title}`,
-    duration: "25 min",
-    xp: "30 XP",
-    status: "locked",
-  },
+    let duration;
+    if (item.level_name === "Mudah") duration = "15 min";
+    if (item.level_name === "Sedang") duration = "20 min";
+    if (item.level_name === "Sulit") duration = "25 min";
 
+    let xp;
+    if (item.level_name === "Mudah") xp = "20 XP";
+    if (item.level_name === "Sedang") xp = "25 XP";
+    if (item.level_name === "Sulit") xp = "30 XP";
 
-  ]
+    return {
+      title: `Level ${item.level_name} `,
+      duration,
+      xp,
+      status,
+    };
+  });
 
   const handleIconModulePelatihan = (status) => {
     if (status == "locked") {
@@ -64,7 +94,7 @@ export default function Course() {
 
     ;
 
-  const navigate = useNavigate();
+
   return (
     <>
       <div>
@@ -108,7 +138,7 @@ export default function Course() {
                   <>
                     {<Link to={"/lesson"}
                       key={index}
-                      state={{ title: item.title, description: item.description }}
+                      state={{ title: item.title, description: item.description, level_id: levels[index]?.id }}
                       className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between hover:transform hover:scale-105 hover:shadow-lg">
                       <div className="flex items-center">
                         <div >

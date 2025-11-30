@@ -11,6 +11,7 @@ from routes.question_routes import question_bp
 from routes.option_routes import option_bp
 from routes.answer_routes import answer_bp
 from routes.score_routes import score_bp
+from routes.userprogress_routes import userprogress_bp
 
 from dotenv import load_dotenv
 import os
@@ -47,6 +48,7 @@ def create_app():
     app.register_blueprint(option_bp, url_prefix="/option")
     app.register_blueprint(answer_bp, url_prefix="/answer")
     app.register_blueprint(score_bp, url_prefix="/score")
+    app.register_blueprint(userprogress_bp, url_prefix="/userprogress")
 
     return app
 

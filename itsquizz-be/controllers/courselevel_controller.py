@@ -22,3 +22,8 @@ def get_levels():
     result = db.session.query(CourseLevel).all()
     data = [l.to_dict() for l in result]
     return jsonify(data), 200
+
+def get_levels_by_course(course_id):
+    result = db.session.query(CourseLevel).filter_by(course_id=course_id).all()
+    data = [l.to_dict() for l in result]
+    return jsonify(data), 200

@@ -19,28 +19,77 @@ export default function Lesson() {
     }, [current]);
 
     // Ambil soal dari server
+    // useEffect(() => {
+    //     if (!state?.title) return;
+
+    //     let isFetched = false; // flag untuk mencegah fetch ulang
+    //     const jumlahSoal = 10;
+
+    //     if (!isFetched) {
+    //         isFetched = true;
+    //         fetch(
+    //             `http://localhost:5000/generatesoal?context=${encodeURIComponent(
+    //                 state.title
+    //             )}&count=${jumlahSoal}`
+    //         )
+    //             .then((res) => res.json())
+    //             .then((data) => setQuestions(data))
+    //             .catch((err) => console.error("Fetch error:", err));
+    //     }
+
+    //     return () => {
+    //         isFetched = true; // jika unmount, hentikan fetch
+    //     };
+    // }, [state]);
+    // const [questions, setQuestions] = useState([]);
+
     useEffect(() => {
-        if (!state?.title) return;
-
-        let isFetched = false; // flag untuk mencegah fetch ulang
-        const jumlahSoal = 10;
-
-        if (!isFetched) {
-            isFetched = true;
-            fetch(
-                `http://localhost:5000/generatesoal?context=${encodeURIComponent(
-                    state.title
-                )}&count=${jumlahSoal}`
-            )
-                .then((res) => res.json())
-                .then((data) => setQuestions(data))
-                .catch((err) => console.error("Fetch error:", err));
-        }
-
-        return () => {
-            isFetched = true; // jika unmount, hentikan fetch
+        const shuffle = (array) => {
+            return array
+                .map((a) => ({ sort: Math.random(), value: a }))
+                .sort((a, b) => a.sort - b.sort)
+                .map((a) => a.value);
         };
-    }, [state]);
+
+        const fetchQuestions = async () => {
+            try {
+                // fetch list soal berdasarkan level_id
+                const qRes = await fetch(`http://localhost:5000/question/level/${state.level_id}`);
+                const qData = await qRes.json();
+
+                // ambil opsi dari tiap soal
+                const fullQuestions = await Promise.all(
+                    qData.map(async (q) => {
+                        const optRes = await fetch(`http://localhost:5000/option/question/${q.id}`);
+                        const optData = await optRes.json();
+
+                        // ubah format seperti versi LLM
+                        return {
+                            question: q.question_text,
+                            options: optData.map((o) => o.option_text),
+                            answer: optData.find((o) => o.is_correct)?.option_text || "",
+                        };
+                    })
+                );
+                let shuffledQuestions = [];
+
+                if (true) {
+                    shuffledQuestions = shuffle(fullQuestions);
+                } else {
+                    shuffledQuestions = fullQuestions;
+                }
+
+                // console.log(shuffledQuestions);
+
+                setQuestions(shuffledQuestions);
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        };
+
+        fetchQuestions();
+    }, [state.level_id]);
+
 
     if (questions.length === 0) {
         return (
@@ -71,17 +120,40 @@ export default function Lesson() {
     const question = questions[current];
 
     const handleSelect = (option) => {
+
         setSelected(option);
     };
 
     const handleCheck = () => {
         if (!selected) return;
+        // console.log("Selected:", selected);
 
-        const correct = selected === question.answer;
-        const updatedAnswers = { ...answers, [current]: { selected, correct } };
+        // Mapping abjad → index
+        const letterToIndex = {
+            A: 0,
+            B: 1,
+            C: 2,
+            D: 3
+        };
+
+        const selectedIndex = letterToIndex[selected];
+        const selectedOption = question.options[selectedIndex];
+
+        const correct = selectedOption.trim() === question.answer.trim();
+
+        const updatedAnswers = {
+            ...answers,
+            [current]: {
+                selected: selectedOption,   // simpan teks jawabannya
+                selectedLetter: selected,   // opsional kalau mau simpan hurufnya
+                correct
+            }
+        };
+
         setAnswers(updatedAnswers);
         setIsChecked(true);
     };
+
 
     const handleNext = () => {
         setSelected(null);
@@ -129,7 +201,7 @@ export default function Lesson() {
                         <div className="flex items-center space-x-4">
                             <div className="flex items-center text-blue-600 font-medium">
                                 <i data-feather="zap" className="mr-1" />
-                                <span>30 XP</span>
+                                {/* <span>30 XP</span> */}
                             </div>
                             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                                 <i data-feather="user" className="text-blue-600" />
@@ -200,24 +272,28 @@ export default function Lesson() {
                             ) : (
                                 <div>
                                     <div
-                                        className={`mt-4 p-4 rounded-lg flex items-start ${selected === question.answer
+                                        className={`mt-4 p-4 rounded-lg flex items-start ${answers[current]?.correct
                                             ? "bg-green-50 text-green-700"
                                             : "bg-red-50 text-red-700"
                                             }`}
                                     >
                                         <i
                                             data-feather={
-                                                selected === question.answer ? "check-circle" : "x-circle"
+                                                answers[current]?.correct ? "check-circle" : "x-circle"
                                             }
                                             className="mr-3 mt-0.5 flex-shrink-0"
                                         />
+
                                         <div>
                                             <h3 className="font-medium mb-1">
-                                                {selected === question.answer ? "Benar!" : "Salah"}
+                                                {answers[current]?.correct ? "Benar!" : "Salah"}
                                             </h3>
+
                                             <p>
                                                 Jawaban benar:{" "}
-                                                <span className="font-semibold">{question.answer}</span>
+                                                <span className="font-semibold">
+                                                    {question.answer}
+                                                </span>
                                             </p>
                                         </div>
                                     </div>
@@ -230,6 +306,7 @@ export default function Lesson() {
                                     </button>
                                 </div>
                             )}
+
                         </div>
                     </div>
                 </main>

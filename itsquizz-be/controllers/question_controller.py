@@ -30,3 +30,8 @@ def get_questions():
     result = db.session.query(Question).all()
     data = [q.to_dict() for q in result]
     return jsonify(data), 200
+
+def get_questions_by_level(level_id):
+    result = db.session.query(Question).filter(Question.level_id == level_id).all()
+    data = [q.to_dict() for q in result]
+    return jsonify(data), 200
