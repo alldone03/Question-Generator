@@ -5,10 +5,10 @@ from config.database import db
 def run():
     data = [
         {
-            "nama": "Aldan",
-            "email": "aldan@gmail.com",
-            "password": "aldandata",
-            "jabatan": "Admin"
+            "nama": "ITS ",
+            "email": "its@gmail.com",
+            "password": "its12345",
+            "jabatan": "Teknisi"
         }
     ]
 

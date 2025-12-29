@@ -41,39 +41,6 @@ export default function Home() {
   if (loading) return <p>Loading...</p>;
 
 
-  // const course = [
-  //   {
-  //     title: "Pengelolaan Gedung dan Ruang Terbuka Hijau",
-  //     description: "Pelajari cara mengelola fasilitas secara efisien dan ramah lingkungan.",
-  //     progress: 0,
-  //     icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="size-6">
-  //       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-  //     </svg>
-  //     ,
-  //     colorFrom: "blue-500",
-  //     colorTo: "blue-600",
-
-  //   },
-  // ];
-
-  // useEffect(() => {
-
-  //   const circle = document.querySelector(".progress-ring__circle");
-  //   if (!circle) return;
-
-  //   const radius = circle.r.baseVal.value;
-  //   const circumference = 2 * Math.PI * radius;
-
-  //   circle.style.strokeDasharray = circumference;
-  //   circle.style.strokeDashoffset = circumference - (70 / 100) * circumference;
-
-
-  //   const lessonCards = document.querySelectorAll(".lesson-card");
-  //   lessonCards.forEach((card) => {
-  //     card.style.transition = "transform 0.3s ease, box-shadow 0.3s ease";
-  //   });
-  // }, []);
-
 
   const handleLogout = async () => {
     try {
@@ -150,38 +117,11 @@ export default function Home() {
           <section className="mb-10">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-800">Kursusmu</h2>
-              <a href="#" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Lihat Semua</a>
+              {/* <a href="#" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Lihat Semua</a> */}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* {course.map((item, index) => (
-                <Link to={"/course"}
-                  key={index}
-                  state={{ title: item.title, description: item.description }}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden transition duration-300 lesson-card hover:transform hover:scale-105 hover:shadow-lg"
-                >
-                  <div
-                    className={`h-32 bg-${item.colorFrom} flex items-center justify-center`}
-                  >
-                    {item.icon}
-                  </div>
 
-                  <div className="p-6">
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2">{item.title}</h3>
-                    <p className="text-gray-500 text-sm mb-4">{item.description}</p>
-
-                    <div className="flex justify-between items-center">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full"
-                          style={{ width: `${item.progress}%` }}
-                        />
-                      </div>
-                      <span className="ml-3 text-sm text-gray-500">{item.progress}%</span>
-                    </div>
-                  </div>
-                </Link>
-              ))} */}
               {courses.map((item, index) => (
                 <Link to={"/course"}
                   key={index}
@@ -189,9 +129,9 @@ export default function Home() {
                   className="bg-white rounded-xl shadow-sm overflow-hidden transition duration-300 lesson-card hover:transform hover:scale-105 hover:shadow-lg"
                 >
                   <div
-                    className={`h-32 bg-${item.colorFrom} flex items-center justify-center`}
+                    className={`h-32 bg-blue-500 flex items-center justify-center`}
                   >
-                    {item.icon}
+                    <img src="https://cdn-icons-png.flaticon.com/512/6342/6342791.png" alt="course" className="h-20 w-20 invert" />
                   </div>
 
                   <div className="p-6">
@@ -210,6 +150,35 @@ export default function Home() {
                   </div>
                 </Link>
               ))}
+
+            </div>
+          </section>
+          <section className="mb-10">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-800">Puzzle</h2>
+
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Link to={"/puzzleac"}
+                className="bg-white rounded-xl shadow-sm overflow-hidden transition duration-300 lesson-card hover:transform hover:scale-105 hover:shadow-lg"
+              >
+                <div
+                  className={`h-32 bg-blue-500 flex items-center justify-center`}
+                >
+
+                  <img src="https://cdn-icons-png.flaticon.com/512/4205/4205637.png" alt="puzzle" className="h-20 w-20 invert" />
+                </div>
+
+                <div className="p-6">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Puzzle Urutan Pemasangan AC</h3>
+                  <div className="flex justify-between items-center">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
 
             </div>
           </section>

@@ -19,6 +19,9 @@ export default function Course() {
 
     fetchLevels();
   }, [courseId]);
+  
+
+  
 
   const fetchLevels = async () => {
     try {
@@ -116,7 +119,7 @@ export default function Course() {
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
           {/* Course Progress */}
-          <section className="mb-8">
+          {/* <section className="mb-8">
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-800">Progres Pelatihan</h2>
@@ -126,7 +129,7 @@ export default function Course() {
                 <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: (modulPelatihan.filter(modul => modul.status === "completed").length / modulPelatihan.length) * 100 + "%" }} />
               </div>
             </div>
-          </section>
+          </section> */}
           {/* Current Lesson */}
           {/* Modules */}
           <section className="mb-8">
@@ -135,23 +138,23 @@ export default function Course() {
               {/* Module 1 (Completed) */}
               {
                 modulPelatihan.map((item, index) => (
-                  <>
-                    {<Link to={"/lesson"}
-                      key={index}
-                      state={{ title: item.title, description: item.description, level_id: levels[index]?.id }}
-                      className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between hover:transform hover:scale-105 hover:shadow-lg">
-                      <div className="flex items-center">
-                        <div >
-                          {handleIconModulePelatihan(item.status)}
-                        </div>
-                        <div className="flex flex-col items-start">
-                          <h3 className="font-medium text-gray-800">{item.title}</h3>
-                          <p className="text-sm text-gray-500">{item.duration} • {item.xp}</p>
-                        </div>
-                      </div>
 
-                    </Link>}
-                  </>
+                  <Link to={"/lesson"}
+                    key={index}
+                    state={{ title: item.title, description: item.description, level_id: levels[index]?.id }}
+                    className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between hover:transform hover:scale-105 hover:shadow-lg">
+                    <div className="flex items-center">
+                      <div>
+                        {handleIconModulePelatihan(item.status)}
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <h3 className="font-medium text-gray-800">{item.title}</h3>
+                        <p className="text-sm text-gray-500">{item.duration} • {item.xp}</p>
+                      </div>
+                    </div>
+
+                  </Link>
+
                 ))
               }
 
@@ -178,7 +181,7 @@ export default function Course() {
             </a>
           </div>
         </nav>
-      </div>
+      </div >
 
     </>
   )
