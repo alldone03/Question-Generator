@@ -2,11 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'); */
+/* 
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-}
+  font-family: 'Poppins', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+} */
 
 body {
   margin: 0;
   min-height: 100vh;
+}
+
+/* Custom Utilities for Loading Screen */
+.tx-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.tx-medium {
+  font-weight: 500;
+}
+
+.tx-white {
+  color: #ffffff;
+}
+
+.tx-28 {
+  font-size: 28px;
+}
+
+.tx-spacing-2 {
+  letter-spacing: 2px;
+}
+
+.mg-b-0 {
+  margin-bottom: 0;
+}
+
+.mg-l-10 {
+  margin-left: 10px;
+}
+
+/* Filter to turn white SVG to ITS Blue #013880 */
+.logo-blue-filter {
+  filter: invert(14%) sepia(89%) saturate(2891%) hue-rotate(218deg) brightness(91%) contrast(101%);
+}
+
+/* OKLCH Color Logo using Mask */
+.logo-oklch {
+  mask-image: url('/logo-myits-white.svg');
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  background-color: oklch(45.7% 0.24 277.023);
+  display: inline-block;
+}
+
+/* Filter to turn white SVG to Black */
+.logo-black-filter {
+  filter: brightness(0);
+}
+
+/* Custom Breath Animation */
+@keyframes breath {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.animate-breath {
+  animation: breath 2s ease-in-out infinite;
 }

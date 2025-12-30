@@ -31,4 +31,9 @@ export const quizService = {
   resultAssesment: (payload) => api.post(`/quiz/resultAssessment`, payload),
 };
 
+export const adminService = {
+  getDashboardStats: () => api.get("/admin/dashboard-stats"),
+  getRecap: (assessmentId = null) => api.get(assessmentId ? `/admin/recap/${assessmentId}` : "/admin/recap"),
+};
+
 export default api;

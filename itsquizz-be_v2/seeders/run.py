@@ -26,6 +26,7 @@ def truncate_tables():
         "modules",
         "assessments",
         "users",
+        "answer_logs",
     ]
 
     for table in tables:

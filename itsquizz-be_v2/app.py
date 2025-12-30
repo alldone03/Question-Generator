@@ -15,6 +15,7 @@ from routes.auth_routes import auth_bp
 from routes.assessment_routes import assessment_bp
 from routes.module_routes import module_bp
 from routes.quiz_routes import quiz_bp
+from routes.admin_routes import admin_bp
 
 from dotenv import load_dotenv
 import os
@@ -55,6 +56,7 @@ def create_app():
     app.register_blueprint(assessment_bp, url_prefix="/assessments")
     app.register_blueprint(module_bp, url_prefix="/module")
     app.register_blueprint(quiz_bp, url_prefix="/quiz")
+    app.register_blueprint(admin_bp, url_prefix="/admin")
 
     return app
 

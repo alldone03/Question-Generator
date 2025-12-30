@@ -8,8 +8,10 @@ import UserDashboard from '../pages/UserDashboard';
 import AssessmentModules from '../pages/AssessmentModules';
 import LearningModule from '../pages/LearningModule';
 import QuizPage from '../pages/QuizPage';
+import PuzzleAC from '../pages/puzzelac';
 import AdminDashboard from '../pages/AdminDashboard';
 import AdminRecap from '../pages/AdminRecap';
+import LoadingSpinner from '../pages/loadingSpinner';
 
 const AppRoutes = () => {
     return (
@@ -39,6 +41,11 @@ const AppRoutes = () => {
                     <QuizPage />
                 </PrivateRoute>
             } />
+            <Route path="/puzzle/:id" element={
+                <PrivateRoute>
+                    <PuzzleAC />
+                </PrivateRoute>
+            } />
 
             {/* Admin Routes */}
             <Route path="/admin" element={
@@ -51,9 +58,15 @@ const AppRoutes = () => {
                     <AdminRecap />
                 </PrivateRoute>
             } />
+            <Route path="/admin/recap/:assessment_id" element={
+                <PrivateRoute adminOnly>
+                    <AdminRecap />
+                </PrivateRoute>
+            } />
 
             {/* Default Redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<LoadingSpinner />} />
+            {/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
         </Routes>
     );
 };

@@ -22,7 +22,7 @@ def seed_scores():
                 Score(
                     user_id=user.id,
                     module_id=module.id,
-                    score=70 + i * 5,
+                    score=60 + (5-i) * 5,
                     sisa_waktu_pengerjaan=120,
                     percobaan_ke=number,
                     tanggal_pengerjaan=datetime.now(),

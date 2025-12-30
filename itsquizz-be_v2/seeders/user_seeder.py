@@ -6,7 +6,7 @@ def seed_users():
     users = [
         User(
             nip="002",
-            nama="Admin Sistem",
+            nama="Teknisi A",
             email="teknisi@mail.com",
             password=hash_password("admin123"),
             jabatan="Teknisi"

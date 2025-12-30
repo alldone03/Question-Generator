@@ -10,8 +10,8 @@ def seed_from_csv(file_path, assessment_id):
         reader = csv.DictReader(csvfile)
 
         for i,row in enumerate(reader):
-            if i > 2:
-                continue
+            # if i > 2:
+            #     continue
             level = row["modules"]
 
             # Buat module jika belum ada

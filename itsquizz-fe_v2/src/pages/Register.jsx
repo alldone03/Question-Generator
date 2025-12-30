@@ -34,6 +34,14 @@ const Register = () => {
         }
     };
 
+    const jabatanList = [
+        "Teknisi",
+        "Supervisor",
+        "Manager",
+        "Admin",
+        "Operator",
+    ];
+
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-secondary/10 to-primary/10">
             <div className="card w-full max-w-lg bg-base-100 shadow-xl border border-base-200">
@@ -138,20 +146,26 @@ const Register = () => {
                                 <span className="label-text font-medium">Jabatan</span>
                             </label>
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40 z-10">
                                     <Briefcase size={18} />
                                 </div>
-                                <input
+                                <select
                                     name="jabatan"
-                                    type="text"
-                                    placeholder="Teknisi"
-                                    className="input input-bordered w-full pl-10 focus:input-secondary transition-all"
+                                    className="select select-bordered w-full pl-10 focus:select-secondary transition-all appearance-none"
                                     value={formData.jabatan}
                                     onChange={handleChange}
                                     required
-                                />
+                                >
+                                    <option value="" disabled>Pilih Jabatan</option>
+                                    {jabatanList.map((jabatan) => (
+                                        <option key={jabatan} value={jabatan}>
+                                            {jabatan}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
+
 
                         <div className="form-control md:col-span-2 mt-4">
                             <button

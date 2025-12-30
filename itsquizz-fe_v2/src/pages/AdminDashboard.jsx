@@ -1,17 +1,67 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
-import { ClipboardList, Users, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { ClipboardList, Users, ArrowUpRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { adminService } from '../services/api';
 
-const assessmentStats = [
-    { id: 'sarpras', name: 'Sarpras', totalUsers: 45, completed: 32 },
-    { id: 'gedung', name: 'Gedung', totalUsers: 28, completed: 15 },
-    { id: 'rth', name: 'RTH', totalUsers: 12, completed: 10 },
-    { id: 'smart-eco', name: 'Smart Eco Campus', totalUsers: 8, completed: 2 },
-];
+/*
+Contoh JSON yang diterima dari Backend:
+[
+    { "id": "sarpras", "name": "Sarpras", "totalUsers": 45, "completed": 32 },
+    { "id": "gedung", "name": "Gedung", "totalUsers": 28, "completed": 15 },
+    { "id": "rth", "name": "RTH", "totalUsers": 12, "completed": 10 },
+    { "id": "smart-eco", "name": "Smart Eco Campus", "totalUsers": 8, "completed": 2 }
+]
+*/
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const [assessmentStats, setAssessmentStats] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
+
+    React.useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                const response = await adminService.getDashboardStats();
+                setAssessmentStats(response.data);
+            } catch (err) {
+                console.error("Error fetching dashboard stats:", err);
+                setError("Gagal mengambil data dashboard. Pastikan backend berjalan.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                    <p className="text-base-content/60 font-medium">Memuat data dashboard...</p>
+                </div>
+            </MainLayout>
+        );
+    }
+
+    if (error) {
+        return (
+            <MainLayout>
+                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                    <div className="bg-error/10 p-4 rounded-full text-error">
+                        <AlertCircle size={48} />
+                    </div>
+                    <h2 className="text-xl font-bold">Terjadi Kesalahan</h2>
+                    <p className="text-base-content/60">{error}</p>
+                    <button onClick={() => window.location.reload()} className="btn btn-primary btn-sm mt-2">Coba Lagi</button>
+                </div>
+            </MainLayout>
+        );
+    }
 
     return (
         <MainLayout>
@@ -51,7 +101,7 @@ const AdminDashboard = () => {
                                         <span className="text-[10px] font-bold text-base-content/40 uppercase tracking-wider">Selesai</span>
                                     </div>
                                     <Link
-                                        to="/admin/recap"
+                                        to={`/admin/recap/${item.id}`}
                                         className="btn btn-ghost btn-sm btn-circle bg-base-200 hover:bg-primary hover:text-primary-content transition-all"
                                     >
                                         <ArrowUpRight size={16} />

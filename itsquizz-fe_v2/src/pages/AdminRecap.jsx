@@ -1,21 +1,58 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import MainLayout from '../layouts/MainLayout';
-import { Download, Search, ArrowUpDown, Filter, User } from 'lucide-react';
+import { Download, Search, ArrowUpDown, Filter, User, AlertCircle } from 'lucide-react';
+import { adminService } from '../services/api';
 
-const mockData = [
-    { nip: '001', nama: 'Aldan', assessment: 'Sarpras', nilai: 85, percobaan: 1 },
-    { nip: '002', nama: 'Budi', assessment: 'Gedung', nilai: 45, percobaan: 2 },
-    { nip: '003', nama: 'Caca', assessment: 'RTH', nilai: 90, percobaan: 1 },
-    { nip: '004', nama: 'Dedi', assessment: 'Smart Eco', nilai: 75, percobaan: 1 },
-    { nip: '005', nama: 'Eka', assessment: 'Sarpras', nilai: 60, percobaan: 3 },
-    { nip: '006', nama: 'Fani', assessment: 'Gedung', nilai: 88, percobaan: 1 },
-];
+/*
+Contoh JSON yang diterima dari Backend:
+[
+    { 
+        "nip": "001", 
+        "nama": "Aldan", 
+        "assessment": "Sarpras", 
+        "module": "Layanan sarana dan prasarana", 
+        "jenis_module": "Puzzle", 
+        "nilai": 85, 
+        "percobaan": 1 
+    },
+    { 
+        "nip": "002", 
+        "nama": "Budi", 
+        "assessment": "Gedung", 
+        "module": "Manajemen Aset", 
+        "jenis_module": "Pilihan Ganda", 
+        "nilai": 45, 
+        "percobaan": 2 
+    }
+]
+*/
 
 const AdminRecap = () => {
-    const [data, setData] = useState(mockData);
+    const { assessment_id } = useParams();
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [sortConfig, setSortConfig] = useState(null);
     const [search, setSearch] = useState('');
+
+    React.useEffect(() => {
+        const fetchRecap = async () => {
+            try {
+                setLoading(true);
+                const response = await adminService.getRecap(assessment_id);
+                setData(response.data);
+            } catch (err) {
+                console.error("Error fetching recap:", err);
+                setError("Gagal mengambil data rekap. Pastikan backend berjalan.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRecap();
+    }, [assessment_id]);
 
     const exportToExcel = () => {
         const ws = XLSX.utils.json_to_sheet(data);
@@ -40,10 +77,37 @@ const AdminRecap = () => {
     };
 
     const filteredData = data.filter(item =>
-        item.nama.toLowerCase().includes(search.toLowerCase()) ||
-        item.nip.includes(search) ||
-        item.assessment.toLowerCase().includes(search.toLowerCase())
+        item.nama?.toLowerCase().includes(search.toLowerCase()) ||
+        item.nip?.includes(search) ||
+        item.assessment?.toLowerCase().includes(search.toLowerCase()) ||
+        item.module?.toLowerCase().includes(search.toLowerCase())
     );
+
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                    <span className="loading loading-spinner loading-lg text-primary"></span>
+                    <p className="text-base-content/60 font-medium">Memuat data rekap...</p>
+                </div>
+            </MainLayout>
+        );
+    }
+
+    if (error) {
+        return (
+            <MainLayout>
+                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                    <div className="bg-error/10 p-4 rounded-full text-error">
+                        <AlertCircle size={48} />
+                    </div>
+                    <h2 className="text-xl font-bold">Terjadi Kesalahan</h2>
+                    <p className="text-base-content/60">{error}</p>
+                    <button onClick={() => window.location.reload()} className="btn btn-primary btn-sm mt-2">Coba Lagi</button>
+                </div>
+            </MainLayout>
+        );
+    }
 
     return (
         <MainLayout>
@@ -55,7 +119,7 @@ const AdminRecap = () => {
                     </div>
                     <button
                         onClick={exportToExcel}
-                        className="btn btn-success text-white gap-2 shadow-lg shadow-success/20 hover:shadow-success/30 transition-all font-bold"
+                        className="btn btn-success text-black gap-2 shadow-lg shadow-success/20 hover:shadow-success/30 transition-all font-bold"
                     >
                         <Download size={18} /> Export ke Excel
                     </button>
@@ -69,7 +133,7 @@ const AdminRecap = () => {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Cari NIP, Nama, atau Assessment..."
+                                placeholder="Cari NIP, Nama, Assessment, atau Module..."
                                 className="input input-bordered w-full pl-10 focus:input-primary transition-all rounded-xl h-11"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -94,6 +158,12 @@ const AdminRecap = () => {
                                     </th>
                                     <th onClick={() => handleSort('assessment')} className="cursor-pointer hover:bg-base-200 uppercase tracking-widest text-[10px] font-black p-4">
                                         <div className="flex items-center gap-2">Assessment <ArrowUpDown size={12} className="opacity-40" /></div>
+                                    </th>
+                                    <th onClick={() => handleSort('module')} className="cursor-pointer hover:bg-base-200 uppercase tracking-widest text-[10px] font-black p-4">
+                                        <div className="flex items-center gap-2">Module <ArrowUpDown size={12} className="opacity-40" /></div>
+                                    </th>
+                                    <th onClick={() => handleSort('jenis_module')} className="cursor-pointer hover:bg-base-200 uppercase tracking-widest text-[10px] font-black p-4">
+                                        <div className="flex items-center gap-2">Tipe <ArrowUpDown size={12} className="opacity-40" /></div>
                                     </th>
                                     <th onClick={() => handleSort('nilai')} className="cursor-pointer hover:bg-base-200 uppercase tracking-widest text-[10px] font-black p-4 text-center">
                                         <div className="flex items-center justify-center gap-2">Nilai <ArrowUpDown size={12} className="opacity-40" /></div>
@@ -120,6 +190,16 @@ const AdminRecap = () => {
                                                 {item.assessment}
                                             </div>
                                         </td>
+                                        <td className="p-4">
+                                            <div className="text-sm font-medium text-base-content/70">
+                                                {item.module}
+                                            </div>
+                                        </td>
+                                        <td className="p-4">
+                                            <div className={`badge badge-sm font-bold ${item.jenis_module === 'Puzzle' ? 'badge-secondary' : 'badge-primary'} badge-outline`}>
+                                                {item.jenis_module}
+                                            </div>
+                                        </td>
                                         <td className="p-4 text-center">
                                             <span className={`text-lg font-black ${item.nilai >= 75 ? 'text-success' : 'text-warning'}`}>
                                                 {item.nilai}
@@ -131,7 +211,7 @@ const AdminRecap = () => {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="5" className="text-center py-20 text-base-content/40 font-bold italic">
+                                        <td colSpan="7" className="text-center py-20 text-base-content/40 font-bold italic">
                                             Tidak ada data yang ditemukan.
                                         </td>
                                     </tr>
@@ -154,3 +234,4 @@ const AdminRecap = () => {
 };
 
 export default AdminRecap;
+

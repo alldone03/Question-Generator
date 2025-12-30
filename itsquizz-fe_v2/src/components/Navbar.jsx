@@ -15,11 +15,15 @@ const Navbar = () => {
     return (
         <div className="navbar bg-base-100 shadow-sm px-4 md:px-8 border-b border-base-200 sticky top-0 z-50">
             <div className="flex-1">
-                <Link to="/dashboard" className="flex items-center gap-2 group">
-                    <div className="bg-primary text-primary-content p-2 rounded-lg group-hover:rotate-12 transition-transform duration-300">
-                        <FileText size={20} />
+                <Link to="/dashboard" className="flex items-center gap-2  group">
+                    <div className="text-primary-content  rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                        {/* <FileText size={20} /> */}
+                        <div
+                            className="h-10 w-[100px] logo-oklch"
+                            aria-label="myITS Logo"
+                        />
                     </div>
-                    <span className="text-xl font-bold tracking-tight">ITSQuizz</span>
+                    <span className="text-2xl font-bold tracking-tight ">Quiz</span>
                 </Link>
             </div>
             <div className="flex-none gap-4">

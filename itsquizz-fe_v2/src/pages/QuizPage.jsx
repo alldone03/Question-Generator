@@ -33,6 +33,7 @@ const QuizPage = () => {
                 setLoadingQuestions(true);
                 const response = await quizService.getQuiz(id);
                 // backend may return array or object; normalize
+                // console.log(response.data);
 
                 const data = response.data.questions ?? [];
                 const formatted = (Array.isArray(data) ? data : []).map(q => ({
@@ -95,11 +96,10 @@ const QuizPage = () => {
 
     const buildLearningPayload = () => {
         return questions.map((q, idx) => ({
-            questionId: q.id,
+            question_id: q.id,
             question: q.text,
-            options: q.options,
-            selectedIndex: answers[idx] ?? null,
-            correctIndex: q.correct,
+            selected_answer_id: q.options[answers[idx]]?.id ?? null,
+            correct_answer_id: q.options[q.correct]?.id ?? null,
             isCorrect: answers[idx] === q.correct,
             timeSpent: waktu_pengerjaan - timeLeft // Assuming timeSpent is calculated this way
         }));
@@ -111,7 +111,7 @@ const QuizPage = () => {
             // setSuggestionsError(null);
             const payload = { answers: buildLearningPayload(), score: finalScore, timeSpent: waktu_pengerjaan - timeLeft, module_id: id, };
 
-            console.log(payload);
+            // console.log(payload);
 
             const res = await quizService.resultAssesment(payload);
             // assume backend returns { suggestions: string }
@@ -289,7 +289,7 @@ const QuizPage = () => {
                                             {answers[currentQuestion] === idx && <div className="w-2 h-2 bg-white rounded-full" />}
                                         </div>
                                         <span className={`font-medium ${answers[currentQuestion] === idx ? 'text-primary' : ''}`}>
-                                            {option}
+                                            {option["text"]}
                                         </span>
                                     </button>
                                 ))}
@@ -316,7 +316,7 @@ const QuizPage = () => {
                                 <button
                                     onClick={handleFinish}
                                     disabled={!isCompleted}
-                                    className="btn btn-success text-white gap-2 shadow-md min-w-[140px]"
+                                    className="btn btn-success text-black gap-2 shadow-md min-w-[140px]"
                                 >
                                     <CheckCircle2 size={18} /> Selesai Kuis
                                 </button>
