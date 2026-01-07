@@ -9,6 +9,9 @@ from models.answerlog import AnswerLog
 from datetime import datetime, timezone
 from models.module import Module
 
+import re
+from typing import List, Dict
+
 
 def index(quiz_id):
     # `quiz_id` represents `module_id` — return all questions for that module
@@ -149,7 +152,7 @@ def _format_wrong_for_prompt(wrong_summary):
     lines = []
     for i, it in enumerate(wrong_summary, start=1):
         lines.append(
-            f"{i}. Soal: {it['question']}\n   Jawaban dipilih: {it['selected']}\n   Jawaban benar: {it['correct']}"
+            f"{i}. Soal: {it['question']}\n   Jawaban benar: {it['correct']}"
         )
     return "\n".join(lines)
 
@@ -230,22 +233,27 @@ def resultAssessment():
     wrong_details = [da for da in detailed_answers if not da["is_correct"]]
     wrong_summary = _build_wrong_summary(
         wrong_details,
-        max_items=2,
+        max_items=10,
         max_q_len=200,
         max_opt_len=120
     )
     wrong_block = _format_wrong_for_prompt(wrong_summary)
 
     prompt = (
-        f"Profil: jabatan {user.jabatan}. Modul: {module.nama_module}.\n\n"
-        f"Kesalahan utama (maks 5):\n{wrong_block}\n\n"
-        "Tuliskan rekomendasi materi pembelajaran dalam bahasa Indonesia (~100 kata) dalam bentuk 1 paragraf. "
-        "Fokus pada konsep inti yang sering keliru, urutan belajar praktis, sumber atau jenis latihan yang relevan, "
-        "dan langkah evaluasi diri singkat. Gunakan bahasa jelas dan actionable."
+        f"{module.nama_module}.\n\n"
+        f"{wrong_block}\n\n"
     )
+    # prompt = (
+    #     f"Profil: jabatan {user.jabatan}. Modul: {module.nama_module}.\n\n"
+    #     f"Kesalahan utama (maks 5):\n{wrong_block}\n\n"
+    #     "Tuliskan rekomendasi materi pembelajaran dalam bahasa Indonesia (~100 kata) dalam bentuk 1 paragraf. "
+    #     "Fokus pada konsep inti yang sering keliru, urutan belajar praktis, sumber atau jenis latihan yang relevan, "
+    #     "dan langkah evaluasi diri singkat. Gunakan bahasa jelas dan actionable."
+    # )
 
     # Panggil LLM secara sinkron
     llm_response = call_llm(prompt)
+    
 
     # Update skor dengan feedback
     new_score.feedback = llm_response
@@ -258,6 +266,102 @@ def resultAssessment():
     return jsonify(response_data), 200
 
 
+# recomendation pages
+FLATTENED_DATA: List[Dict] = [
+    # 3.1 PERENCANAAN DAN PENGELOLAAN LAYANAN SARPRAS
+    {"id": "4.1.1", "title": "Pengelolaan Usulan Pengadaan", "path": "BAB III > 3.1", "page": 5},
+    {"id": "4.1.2", "title": "Pengendalian Perbaikan Renovasi", "path": "BAB III > 3.1", "page": 5},
+    {"id": "4.1.3", "title": "Pengelolaan Peminjaman Alat Bahan", "path": "BAB III > 3.1", "page": 6}, 
+
+    # 3.2 PENGELOLAAN GEDUNG DAN LINGKUNGAN/RUANG TERBUKA HIJAU
+    {"id": "4.2.1", "title": "Jadwal Perbaikan Pemeliharaan", "path": "BAB III > 3.2", "page": 6},
+    {"id": "4.2.2.1", "title": "Penggunaan Ruang", "path": "BAB III > 3.2 > RTH", "page": 6}, 
+    {"id": "4.2.2.2", "title": "Ruang Terbuka Hijau", "path": "BAB III > 3.2 > RTH", "page": 7},
+    {"id": "4.2.3", "title": "Dokumen Perbaikan Sarpras", "path": "BAB III > 3.2", "page": 8}, 
+    {"id": "4.2.4", "title": "Pemeliharaan Perangkat K3", "path": "BAB III > 3.2", "page": 9}, 
+    
+    # Detil 3.2.5 Pengelolaan Peralatan Sarana dan Prasarana
+    {"id": "4.2.5.1.1", "title": "Pemeliharaan Perabot Ruang", "path": "BAB III > 3.2 > Peralatan", "page": 10},
+    {"id": "4.2.5.1.2", "title": "Pemeliharaan Media Pendidikan", "path": "BAB III > 3.2 > Peralatan", "page": 11},
+    {"id": "4.2.5.1.3", "title": "Pemeliharaan Alat Praktik TIK", "path": "BAB III > 3.2 > Peralatan", "page": 11},
+    
+    {"id": "4.2.5.2.1", "title": "Pemeliharaan Komponen Struktur", "path": "BAB III > 3.2 > Prasarana", "page": 12}, 
+    {"id": "4.2.5.2.2", "title": "Pemeliharaan Komponen Arsitektur", "path": "BAB III > 3.2 > Prasarana", "page": 13},
+    {"id": "4.2.5.2.3", "title": "Pemeliharaan Komponen Utilitas", "path": "BAB III > 3.2 > Prasarana", "page": 17},
+    {"id": "4.2.5.2.4", "title": "Pemeliharaan Tata Ruang Luar", "path": "BAB III > 3.2 > Prasarana", "page": 21},
+
+    # 3.3 PENGELOLAAN PROGRAM SMART ECO CAMPUS
+    {"id": "4.3.1.1", "title": "Penghematan Listrik Gedung", "path": "BAB III > Smart Eco Campus", "page": 23},
+    {"id": "4.3.1.2", "title": "Penghematan BBM Kendaraan", "path": "BAB III > Smart Eco Campus", "page": 25},
+    {"id": "4.3.1.3", "title": "Penghematan Penggunaan Air", "path": "BAB III > Smart Eco Campus", "page": 25},
+    {"id": "4.3.2.1", "title": "Energi Terbarukan di RTH", "path": "BAB III > Smart Eco Campus", "page": 25},
+    {"id": "4.3.2.2", "title": "Energi Terbarukan di Gedung", "path": "BAB III > Smart Eco Campus", "page": 26},
+]
+
+# =====================================================
+# TEXT NORMALIZATION
+# =====================================================
+def normalize_text(text: str) -> List[str]:
+    """
+    Lowercase, remove symbols, split to tokens
+    """
+    text = text.lower()
+    text = re.sub(r"[^a-z0-9\s]", "", text)
+    return text.split()
+
+# =====================================================
+# SCORING LOGIC
+# =====================================================
+def calculate_score(tokens: List[str], item: Dict) -> int:
+    """
+    Scoring rules:
+    - token in title  -> +3
+    - token in path   -> +1
+    """
+    score = 0
+    title = item["title"].lower()
+    path = item["path"].lower()
+
+    for token in tokens:
+        # print("ini token: "+token+", ini title: "+title)
+        if token in title:
+            score += 3
+        elif token in path:
+            score += 1
+
+    return score
+
+# =====================================================
+# MAIN RECOMMENDATION FUNCTION
+# =====================================================
+
+
+def recommend_pages(
+    user_input: str,
+    top_k: int = 3
+) -> List[Dict]:
+    """
+    Return top-k recommended pages based on keyword scoring
+    """
+    tokens = normalize_text(user_input)
+    results = []
+
+    for item in FLATTENED_DATA:
+        score = calculate_score(tokens, item)
+        if score > 0:
+            results.append({
+                "id": item["id"],
+                "title": item["title"],
+                "page": item["page"],
+                "path": item["path"],
+                "score": score
+            })
+
+    results.sort(key=lambda x: x["score"], reverse=True)
+    return results[:top_k]
+
+
+
 from dotenv import load_dotenv
 import os
 # Load isi file .env
@@ -265,16 +369,33 @@ load_dotenv()
 LLM_API_URL = os.getenv("llm_url")
 import requests
 def call_llm(prompt: str) -> str:
+    """
+    Pengganti call_llm:
+    Menghasilkan rekomendasi halaman materi berdasarkan input user (non-LLM)
+    """
     try:
-        response = requests.post(
-            LLM_API_URL,
-            json={"prompt": prompt},
-            timeout=30
-        )
-        response.raise_for_status()
-        data = response.json()
-        print(data)
-        return data.get("response", "")
+        # print(prompt)
+        recommendations = recommend_pages(prompt, top_k=3)
+
+        if not recommendations:
+            return (
+                prompt
+                + "\n\n[Tidak ditemukan materi yang relevan]"
+            )
+        # print(recommendations)
+
+        
+
+        result_text = "\n".join([
+        f"{r['path']}|{r['page']}|{r['id']}|{r['title']}" 
+        for r in recommendations
+])
+
+        return result_text
+
     except Exception as e:
-        print("Error call_llm:", e)
-        return prompt + "\n\n[Rekomendasi materi tidak tersedia saat ini]"
+        print("Error call_llm (non-LLM):", e)
+        return (
+            prompt
+            + "\n\n[Rekomendasi materi tidak tersedia saat ini]"
+        )

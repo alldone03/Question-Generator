@@ -28,7 +28,7 @@ const AssessmentModules = () => {
                     name: module.name,
                     level: module.level || 'Mudah',
                     score: module.score || 0,
-                    feedback: module.feedback || 'Belum ada feedback.',
+                    feedback: module.feedback || '',
                     link: module.link_module_pembelajaran || '#',
                     waktu_pengerjaan: module.waktu_pengerjaan,
                     jenis_module: module.jenis_module,
@@ -95,15 +95,39 @@ const AssessmentModules = () => {
                                 <h2 className="text-xl font-bold mb-4">{module.name}</h2>
 
                                 <div className="bg-base-200/50 rounded-xl p-4 mb-6 min-h-[100px]">
-                                    <p className="text-sm font-semibold text-base-content/40 uppercase tracking-tight mb-2">Saran Belajar</p>
-                                    <p className="text-sm italic text-base-content/70 leading-relaxed">
-                                        "{module.feedback}"
-                                    </p>
+                                    {module.name != "Puzzle" ? (<p className="text-sm font-semibold text-base-content/40 uppercase tracking-tight mb-2">Saran Belajar</p>) : null}
+
+                                    {/* <p className="text-sm italic text-base-content/70 leading-relaxed"> */}
+                                    <div className='text-sm italic text-base-content/70 leading-relaxed'>
+                                        {module.feedback == '' ? (
+                                            <p>Belum ada</p>
+                                        ) : null}
+
+
+                                        {module.name != "Puzzle" ? (module.feedback?.trim() ? (
+                                            module.feedback
+                                                .split('\n')
+                                                .filter(line => line.trim().length > 0)
+                                                .map((line) => {
+                                                    const parts = line.split('|');
+                                                    if (parts.length < 4) return null;
+                                                    const [path, page, id, title] = parts;
+                                                    return (
+                                                        <p key={id ?? `${path}-${page}-${title}`}>
+                                                            - {path} Halaman <strong>{page}</strong>: {title}
+                                                        </p>
+                                                    );
+                                                })
+                                        ) : null) : null}
+                                    </div>
+
+
+                                    {/* </p> */}
                                 </div>
 
                                 {module.waktu_pengerjaan && (
                                     <div className="text-xs text-base-content/60 mb-4">
-                                        ⏱️ Waktu: {module.waktu_pengerjaan} menit
+                                        ⏱️ Waktu: {module.waktu_pengerjaan} detik
                                     </div>
                                 )}
                             </div>

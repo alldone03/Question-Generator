@@ -9,6 +9,7 @@ const QuizPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [questions, setQuestions] = useState([]);
+    const [resultResp, setResultResp] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState({});
     const [timeLeft, setTimeLeft] = useState(600); // default 10 minutes in seconds
@@ -115,7 +116,7 @@ const QuizPage = () => {
 
             const res = await quizService.resultAssesment(payload);
             // assume backend returns { suggestions: string }
-            // setSuggestions(res.data.suggestions ?? res.data);
+            setResultResp(res.data ?? res.data);
         } catch (err) {
             console.error('Failed to get suggestions:', err);
             // setSuggestionsError('Gagal mendapatkan rekomendasi. Coba lagi.');
@@ -124,11 +125,90 @@ const QuizPage = () => {
         }
     };
 
+    // const getFeedback = (score) => {
+    //     if (score === 100) return { title: "Luar Biasa!", text: "Anda memahami seluruh materi dengan sempurna. Pertahankan prestasi ini!", color: "text-success", icon: <CheckCircle2 size={48} className="text-success" /> };
+    //     if (score >= 80) return { title: "Sangat Bagus!", text: "Anda memiliki pemahaman yang kuat tentang materi ini. Sedikit lagi menuju sempurna.", color: "text-primary", icon: <CheckCircle2 size={48} className="text-primary" /> };
+    //     if (score >= 50) return { title: "Kerja Bagus!", text: "Anda sudah memahami dasar-dasarnya, namun masih ada beberapa bagian yang perlu dipelajari kembali.", color: "text-warning", icon: <AlertCircle size={48} className="text-warning" /> };
+    //     return { title: "Tetap Semangat!", text: "Jangan berkecil hati. Pelajari kembali modul pembelajaran dan coba kuis ini lagi untuk hasil yang lebih baik.", color: "text-error", icon: <AlertCircle size={48} className="text-error" /> };
+    // };
+    const normalizeKategori = (value = "") => {
+        const v = value.toLowerCase();
+        if (v.includes("mudah")) return "mudah";
+        if (v.includes("sedang")) return "sedang";
+        if (v.includes("sulit")) return "sulit";
+        return null;
+    };
+
     const getFeedback = (score) => {
-        if (score === 100) return { title: "Luar Biasa!", text: "Anda memahami seluruh materi dengan sempurna. Pertahankan prestasi ini!", color: "text-success", icon: <CheckCircle2 size={48} className="text-success" /> };
-        if (score >= 75) return { title: "Sangat Bagus!", text: "Anda memiliki pemahaman yang kuat tentang materi ini. Sedikit lagi menuju sempurna.", color: "text-primary", icon: <CheckCircle2 size={48} className="text-primary" /> };
-        if (score >= 50) return { title: "Kerja Bagus!", text: "Anda sudah memahami dasar-dasarnya, namun masih ada beberapa bagian yang perlu dipelajari kembali.", color: "text-warning", icon: <AlertCircle size={48} className="text-warning" /> };
-        return { title: "Tetap Semangat!", text: "Jangan berkecil hati. Pelajari kembali modul pembelajaran dan coba kuis ini lagi untuk hasil yang lebih baik.", color: "text-error", icon: <AlertCircle size={48} className="text-error" /> };
+        const kategori = normalizeKategori(moduleName);
+        const namaBab = nameAssessment || "tertentu";
+
+        // ===== MUDAH =====
+        if (kategori === "mudah") {
+            const naikLevel = score > 80;
+
+            return {
+                title: "Asesmen Kategori Mudah Selesai",
+                level: naikLevel ? "Sedang" : "Mudah",
+                text: naikLevel
+                    ? `Selamat, Anda telah menyelesaikan asesmen kategori Mudah pada Bab ${namaBab} dengan skor ${score}.
+Hasil ini menunjukkan penguasaan materi yang baik.
+Anda dinilai siap melanjutkan ke asesmen kategori Sedang.`
+                    : `Terima kasih, Anda telah menyelesaikan asesmen kategori Mudah pada Bab ${namaBab} dengan skor ${score}.
+Berdasarkan hasil ini, AI memetakan kompetensi Anda masih berada pada level Mudah.
+Disarankan untuk mempelajari kembali modul dan mengerjakan ulang asesmen.`,
+                color: naikLevel ? "text-success" : "text-warning",
+                icon: naikLevel
+                    ? <CheckCircle2 size={48} className="text-success" />
+                    : <AlertCircle size={48} className="text-warning" />
+            };
+        }
+
+        // ===== SEDANG =====
+        if (kategori === "sedang") {
+            const naikLevel = score > 80;
+
+            return {
+                title: "Asesmen Kategori Sedang Selesai",
+                level: naikLevel ? "Sulit" : "Sedang",
+                text: naikLevel
+                    ? `Selamat, Anda telah menyelesaikan asesmen kategori Sedang pada Bab ${namaBab} dengan skor ${score}.
+AI memetakan kompetensi teknis Anda siap untuk naik ke kategori Sulit.
+Silakan melanjutkan ke asesmen tingkat lanjutan.`
+                    : `Anda telah menyelesaikan asesmen kategori Sedang pada Bab ${namaBab} dengan skor ${score}.
+Berdasarkan hasil ini, kompetensi Anda masih berada pada level Sedang.
+Disarankan untuk meninjau kembali materi sebelum melanjutkan.`,
+                color: naikLevel ? "text-success" : "text-warning",
+                icon: naikLevel
+                    ? <CheckCircle2 size={48} className="text-success" />
+                    : <AlertCircle size={48} className="text-warning" />
+            };
+        }
+
+        // ===== SULIT (FINAL) =====
+        if (kategori === "sulit") {
+            const advanced = score > 80;
+
+            return {
+                title: advanced
+                    ? "Profil Akhir: Advanced"
+                    : "Profil Kompetensi Ditahan",
+                level: advanced ? "Advanced" : "Sulit",
+                text: advanced
+                    ? `Selamat, Anda telah menyelesaikan seluruh asesmen pada Bab ${namaBab} dengan skor ${score}.
+AI menetapkan profil akhir Anda pada level Advanced.
+Sistem merekomendasikan Anda mengikuti course lanjutan atau melanjutkan ke bab pembelajaran lain.`
+                    : `Anda telah menyelesaikan asesmen kategori Sulit pada Bab ${namaBab} dengan skor ${score}.
+Berdasarkan hasil ini, kompetensi Anda masih berada pada level Sulit.
+Disarankan untuk mempelajari kembali modul dan mengulang asesmen.`,
+                color: advanced ? "text-success" : "text-warning",
+                icon: advanced
+                    ? <CheckCircle2 size={48} className="text-success" />
+                    : <AlertCircle size={48} className="text-warning" />
+            };
+        }
+
+        return null;
     };
 
     const isCompleted = Object.keys(answers).length === questions.length;
@@ -164,6 +244,32 @@ const QuizPage = () => {
                         <p className="text-base-content/60 max-w-md mx-auto mb-8 font-medium">
                             {feedback.text}
                         </p>
+                        <div className='text-sm text-left italic text-base-content/70 leading-relaxed'>
+                            {finalScore >= 80 ? (<>Tingkatan Kompetensi berikutnya telah terbuka</>) : ""}
+                            <br />
+                            {finalScore < 80 && (
+                                <>
+                                    <p>Pelajari Materi:</p>
+                                    {resultResp.recommendation?.trim()
+                                        ? resultResp.recommendation
+                                            .split('\n')
+                                            .filter(line => line.trim().length > 0)
+                                            .map((line) => {
+                                                const parts = line.split('|');
+                                                if (parts.length < 4) return null;
+
+                                                const [path, page, id, title] = parts;
+
+                                                return (
+                                                    <p key={id ?? `${path}-${page}-${title}`}>
+                                                        - {path}, Halaman <strong>{page}</strong>: {title}
+                                                    </p>
+                                                );
+                                            })
+                                        : null}
+                                </>
+                            )}
+                        </div>
 
                         <div className="stats shadow bg-base-200 w-full mb-8">
                             <div className="stat">

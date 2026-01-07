@@ -2,7 +2,7 @@ from flask import Flask
 from config.database import db
 from models import *
 from sqlalchemy import text
-from seeders.question_csv_seeder import seed_from_csv
+from seeders.soal_csv_seeder import seed_from_csv
 from seeders.user_seeder import seed_users
 from seeders.assessment_seeder import seed_assessments
 from seeders.score_seeder import seed_scores
@@ -39,7 +39,8 @@ def truncate_tables():
 with app.app_context():
     truncate_tables()
     seed_users()
-    seed_assessments()
-    seed_from_csv(r'C:\Users\aldan\Desktop\Question-Generator\itsquizz-be_v2\ITS Quiz Soal - Teknisi Sarpras.csv',assessment_id=1)
+    # seed_assessments()
+    seed_from_csv(r'C:\Users\aldan\Desktop\Question-Generator\itsquizz-be_v2\ITS Quiz Soal - soal ALL.csv')
+    # seed_from_csv(r'C:\Users\aldan\Desktop\Question-Generator\itsquizz-be_v2\ITS Quiz Soal - Teknisi Sarpras.csv', assessment_id=1)
     seed_scores()
     print("Re-seeder selesai")

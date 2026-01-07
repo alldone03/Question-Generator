@@ -5,6 +5,17 @@ from config.database import db
 
 def seed_from_csv(file_path, assessment_id):
     modules_cache = {}
+    # seed puzzle
+    module = Module(
+                    assessment_id=assessment_id,
+                    nama_module=f"Puzzle",
+                    level="Mudah",
+                    jenis_module="Puzzle",
+                    waktu_pengerjaan=750
+                )
+    db.session.add(module)
+    db.session.flush()
+    db.session.commit()
 
     with open(file_path, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -56,14 +67,4 @@ def seed_from_csv(file_path, assessment_id):
 
         db.session.commit()
         
-    # seed puzzle
-    module = Module(
-                    assessment_id=assessment_id,
-                    nama_module=f"Puzzle",
-                    level="Mudah",
-                    jenis_module="Puzzle",
-                    waktu_pengerjaan=750
-                )
-    db.session.add(module)
-    db.session.flush()
-    db.session.commit()
+    
