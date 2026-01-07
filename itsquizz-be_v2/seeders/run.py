@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from config.database import db
 from models import *
@@ -7,9 +9,11 @@ from seeders.user_seeder import seed_users
 from seeders.assessment_seeder import seed_assessments
 from seeders.score_seeder import seed_scores
 
+load_dotenv()
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:@localhost:3306/question_generator_db"
+# Use DATABASE_URL from environment or fallback to local
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "mysql+pymysql://root:@localhost:3306/question_generator_db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -30,17 +34,32 @@ def truncate_tables():
     ]
 
     for table in tables:
-        db.session.execute(text(f"TRUNCATE TABLE {table};"))
+        try:
+            db.session.execute(text(f"TRUNCATE TABLE {table};"))
+        except Exception as e:
+            print(f"Warning: Could not truncate {table}: {e}")
+
 
     db.session.execute(text("SET FOREIGN_KEY_CHECKS = 1;"))
     db.session.commit()
 
 
-with app.app_context():
-    truncate_tables()
-    seed_users()
-    # seed_assessments()
-    seed_from_csv(r'C:\Users\aldan\Desktop\Question-Generator\itsquizz-be_v2\ITS Quiz Soal - soal ALL.csv')
-    # seed_from_csv(r'C:\Users\aldan\Desktop\Question-Generator\itsquizz-be_v2\ITS Quiz Soal - Teknisi Sarpras.csv', assessment_id=1)
-    seed_scores()
-    print("Re-seeder selesai")
+if __name__ == "__main__":
+    with app.app_context():
+        print("Creating tables if they don't exist...")
+        db.create_all()
+        print("Truncating tables...")
+
+        truncate_tables()
+        print("Seeding users...")
+        seed_users()
+        # seed_assessments()
+        
+        csv_path = os.path.join(os.path.dirname(__file__), '..', 'ITS Quiz Soal - soal ALL.csv')
+        print(f"Seeding from {csv_path}...")
+        seed_from_csv(csv_path)
+        
+        # seed_from_csv(r'ITS Quiz Soal - Teknisi Sarpras.csv', assessment_id=1)
+        print("Seeding scores...")
+        seed_scores()
+        print("Re-seeder selesai")

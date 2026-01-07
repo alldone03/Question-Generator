@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: itsquizz-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: itsquizz_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_PASSWORD: userpassword
+      MYSQL_USER: user
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Backend Service
+  backend:
+    build:
+      context: ./itsquizz-be_v2
+      dockerfile: Dockerfile
+    container_name: itsquizz-be
+    restart: always
+    environment:
+      - DATABASE_URL=mysql+pymysql://user:userpassword@db:3306/itsquizz_db
+      - SECRET_KEY=supersecret123
+      - SESSION_TYPE=filesystem
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./itsquizz-fe_v2
+      dockerfile: Dockerfile
+    container_name: itsquizz-fe
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

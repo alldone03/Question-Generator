@@ -6,9 +6,6 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 
-
-
-
 from models import *
 
 from routes.auth_routes import auth_bp
@@ -24,10 +21,11 @@ load_dotenv()
 
 migrate = Migrate()  # <-- tambahkan
 
+
 def create_app():
     app = Flask(__name__)
     CORS(app,
-         resources={r"/*": {"origins": "http://localhost:5173"}},
+         resources={r"/*": {"origins": "http://localhost"}},
          supports_credentials=True)
 
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
