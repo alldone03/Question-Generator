@@ -72,7 +72,7 @@ const Register = () => {
                                 <input
                                     name="nama"
                                     type="text"
-                                    placeholder="Aldan"
+                                    placeholder="Nama"
                                     className="input input-bordered w-full pl-10 focus:input-secondary transition-all"
                                     value={formData.nama}
                                     onChange={handleChange}
@@ -112,7 +112,7 @@ const Register = () => {
                                 <input
                                     name="email"
                                     type="email"
-                                    placeholder="aldan@mail.com"
+                                    placeholder="nama@mail.com"
                                     className="input input-bordered w-full pl-10 focus:input-secondary transition-all"
                                     value={formData.email}
                                     onChange={handleChange}
