@@ -51,6 +51,7 @@ def index(assessment_id):
             "jenis_module": m.jenis_module,
             "waktu_pengerjaan": m.waktu_pengerjaan,
             "percobaan_ke": latest_score.percobaan_ke if latest_score else 0,
+            
         })
 
         # simpan state untuk loop berikutnya

@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN flask db init # only first action
+RUN flask db migrate -m "add feedback to module"
+RUN flask db upgrade
+RUN python -m seeders.run
+
 
 # Adding missing dependencies used in app.py
 

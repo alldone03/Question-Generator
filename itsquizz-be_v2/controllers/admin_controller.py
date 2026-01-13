@@ -26,6 +26,7 @@ def get_recap(assesment_id=None):
             "jenis_module": module.jenis_module,
             "nilai": score.score,
             "percobaan": score.percobaan_ke,
+            "timestamp": score.tanggal_pengerjaan.strftime("%Y-%m-%d %H:%M:%S"),
         })
 
     return jsonify(data)

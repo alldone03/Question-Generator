@@ -42,6 +42,7 @@ const AdminRecap = () => {
             try {
                 setLoading(true);
                 const response = await adminService.getRecap(assessment_id);
+                console.log(response.data)
                 setData(response.data);
             } catch (err) {
                 console.error("Error fetching recap:", err);
@@ -171,6 +172,9 @@ const AdminRecap = () => {
                                     <th onClick={() => handleSort('percobaan')} className="cursor-pointer hover:bg-base-200 uppercase tracking-widest text-[10px] font-black p-4 text-center">
                                         <div className="flex items-center justify-center gap-2">Percobaan Ke- <ArrowUpDown size={12} className="opacity-40" /></div>
                                     </th>
+                                    <th onClick={() => handleSort('timestamp')} className="cursor-pointer hover:bg-base-200 uppercase tracking-widest text-[10px] font-black p-4 text-center">
+                                        <div className="flex items-center justify-center gap-2">Timestamp <ArrowUpDown size={12} className="opacity-40" /></div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-base-100">
@@ -207,6 +211,9 @@ const AdminRecap = () => {
                                         </td>
                                         <td className="p-4 text-center font-bold text-base-content/60">
                                             {item.percobaan}
+                                        </td>
+                                        <td className="p-4 text-center font-bold text-base-content/60">
+                                            {item.timestamp}
                                         </td>
                                     </tr>
                                 )) : (

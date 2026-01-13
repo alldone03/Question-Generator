@@ -186,7 +186,7 @@ export default function PuzzleAC() {
 
                         <div className="w-full text-left bg-base-200/50 rounded-2xl p-6 mb-8 overflow-y-auto max-h-60">
                             <h3 className="font-bold mb-4 flex items-center gap-2">
-                                <AlertCircle size={18} /> Review Prosedur
+                                <AlertCircle size={18} /> Review Alur Pemasangan
                             </h3>
                             <ul className="space-y-3">
                                 {feedbackList.map((f, i) => (
@@ -240,7 +240,7 @@ export default function PuzzleAC() {
                             <ChevronLeft size={20} />
                         </button>
                         <div className="flex flex-col">
-                            <h1 className="font-bold text-lg leading-tight uppercase tracking-tight">Puzzle Prosedur: {moduleName}</h1>
+                            <h1 className="font-bold text-lg leading-tight uppercase tracking-tight">Puzzle Alur Pemasangan AC: {moduleName}</h1>
                             <span className="text-sm font-medium text-base-content/50 truncate max-w-[200px] md:max-w-none">{nameAssessment}</span>
                         </div>
                     </div>
@@ -266,7 +266,7 @@ export default function PuzzleAC() {
                     {/* Target Area */}
                     <div className="flex-1 w-full space-y-4">
                         <h2 className="text-xl font-black uppercase tracking-widest text-base-content/40 flex items-center gap-2">
-                            <CheckCircle2 size={24} className="text-primary" /> Urutan Prosedur
+                            <CheckCircle2 size={24} className="text-primary" /> Urutan Alur Pemasangan AC
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-base-100 p-4 rounded-3xl shadow-xl border border-base-200">
                             {target.map((item, index) => (
