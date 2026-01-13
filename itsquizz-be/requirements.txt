@@ -1,9 +1,0 @@
-flask 
-# flask_sqlalchemy 
-flask_session 
-werkzeug
-python-dotenv
-flask-session 
-sqlalchemy
-flask-cors
-flask-migrate

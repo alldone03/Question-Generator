@@ -17,6 +17,7 @@ const QuizPage = () => {
     const [finalScore, setFinalScore] = useState(0);
     const [loadingQuestions, setLoadingQuestions] = useState(true);
     const [quizError, setQuizError] = useState(null);
+    const [showWarningModal, setShowWarningModal] = useState(false);
     // const [suggestions, setSuggestions] = useState(null);
     // const [loadingSuggestions, setLoadingSuggestions] = useState(false);
     // const [suggestionsError, setSuggestionsError] = useState(null);
@@ -27,6 +28,31 @@ const QuizPage = () => {
     useEffect(() => {
         setTimeLeft(waktu_pengerjaan ?? 600);
     }, [waktu_pengerjaan]);
+
+    // Anti-cheat & Security handlers
+    useEffect(() => {
+        const handleContextMenu = (e) => e.preventDefault();
+        const handleCopyCutPaste = (e) => e.preventDefault();
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                setShowWarningModal(true);
+            }
+        };
+
+        document.addEventListener('contextmenu', handleContextMenu);
+        document.addEventListener('copy', handleCopyCutPaste);
+        document.addEventListener('cut', handleCopyCutPaste);
+        document.addEventListener('paste', handleCopyCutPaste);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('contextmenu', handleContextMenu);
+            document.removeEventListener('copy', handleCopyCutPaste);
+            document.removeEventListener('cut', handleCopyCutPaste);
+            document.removeEventListener('paste', handleCopyCutPaste);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -92,8 +118,15 @@ const QuizPage = () => {
         const score = Math.round((correctCount / questions.length) * 100);
         setFinalScore(score);
         setShowResults(true);
-        handleResultAssesment();
+        handleResultAssesment(score);
     };
+
+    // Auto-submit when time runs out
+    useEffect(() => {
+        if (timeLeft === 0 && !showResults && !loadingQuestions && questions.length > 0) {
+            handleFinish();
+        }
+    }, [timeLeft, showResults, loadingQuestions, questions.length]);
 
     const buildLearningPayload = () => {
         return questions.map((q, idx) => ({
@@ -102,15 +135,16 @@ const QuizPage = () => {
             selected_answer_id: q.options[answers[idx]]?.id ?? null,
             correct_answer_id: q.options[q.correct]?.id ?? null,
             isCorrect: answers[idx] === q.correct,
-            timeSpent: waktu_pengerjaan - timeLeft // Assuming timeSpent is calculated this way
+            timeSpent: waktu_pengerjaan - timeLeft
         }));
     };
 
-    const handleResultAssesment = async () => {
+    const handleResultAssesment = async (scoreOverride = null) => {
         try {
             // setLoadingSuggestions(true);
             // setSuggestionsError(null);
-            const payload = { answers: buildLearningPayload(), score: finalScore, timeSpent: waktu_pengerjaan - timeLeft, module_id: id, };
+            const currentScore = scoreOverride !== null ? scoreOverride : finalScore;
+            const payload = { answers: buildLearningPayload(), score: currentScore, timeSpent: waktu_pengerjaan - timeLeft, module_id: id, };
 
             // console.log(payload);
 
@@ -330,7 +364,7 @@ Disarankan untuk mempelajari kembali modul dan mengulang asesmen.`,
     }
 
     return (
-        <div className="min-h-screen bg-base-200 flex flex-col">
+        <div className="min-h-screen bg-base-200 flex flex-col select-none">
             {/* Quiz Header */}
             <header className="bg-base-100 shadow-md border-b border-base-200 px-6 py-4 sticky top-0 z-50">
                 <div className="container mx-auto flex justify-between items-center max-w-5xl">
@@ -463,6 +497,31 @@ Disarankan untuk mempelajari kembali modul dan mengulang asesmen.`,
                     </div>
                 </div>
             </main>
+
+            {/* Warning Modal for Tab Switching */}
+            {showWarningModal && (
+                <div className="fixed inset-0 z-[999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="card w-full max-w-md bg-base-100 shadow-2xl animate-in zoom-in duration-200">
+                        <div className="card-body items-center text-center p-8">
+                            <div className="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error">
+                                <AlertCircle size={48} />
+                            </div>
+                            <h3 className="text-2xl font-black text-error mb-2">Peringatan!</h3>
+                            <p className="font-bold text-lg mb-6">Anda tidak diperbolehkan berganti page!</p>
+                            <p className="text-base-content/60 text-sm mb-8">
+                                Meninggalkan halaman kuis dapat dianggap sebagai tindakan kecurangan.
+                                Silakan kembali mengerjakan kuis.
+                            </p>
+                            <button
+                                onClick={() => setShowWarningModal(false)}
+                                className="btn btn-error w-full font-bold text-black shadow-lg"
+                            >
+                                Lanjutkan Assessment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

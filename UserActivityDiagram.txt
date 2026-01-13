@@ -1,0 +1,93 @@
+@startuml
+title User Activity Diagram for ITS Quizz App
+
+|#Pink|Teknisi|
+|#LightBlue|Superadmin|
+|#LightGray|System|
+
+start
+
+|Teknisi|
+:Open Application;
+if (Has Account?) then (yes)
+    :Input User & Password;
+else (no)
+    :Register via Registration Page;
+    :Input User & Password;
+endif
+:Click Login;
+
+|System|
+:Validate Credentials;
+if (Valid?) then (yes)
+    :Check User Role;
+else (no)
+    :Show Error Message;
+    stop
+endif
+
+if (Role == Teknisi) then (yes)
+    |Teknisi|
+    :Redirect to User Dashboard;
+    :View Available Assessments;
+    :Select an Assessment;
+    :View List of Modules;
+    :Select a Module (Start Quiz);
+    
+    |System|
+    :Retrieve Questions;
+    
+    |Teknisi|
+    repeat
+        :Read Question;
+        :Select Answer;
+    repeat while (More Questions?) is (yes)
+    
+    :Submit Quiz;
+    
+    |System|
+    :Calculate Score;
+    :Save Result to Database;
+    :Generate Learning Feedback;
+    
+    |Teknisi|
+    :View Result Page;
+    note right
+        Shows:
+        - Score
+        - Correct/Wrong Answers
+        - Learning Suggestions
+    end note
+    :Back to Dashboard;
+
+else (no (Superadmin))
+    |Superadmin|
+    :Redirect to Admin Dashboard;
+    
+    split
+        :View Dashboard Statistics;
+        note right
+            Charts & High level metrics
+        end note
+    split again
+        :View Recap Menu;
+        if (Filter Required?) then (yes)
+            :Select Assessment from Dropdown;
+            |System|
+            :Fetch Filtered Recap Data;
+            |Superadmin|
+        else (no)
+            |System|
+            :Fetch All Recap Data;
+            |Superadmin|
+        endif
+        :View Recap Table;
+        :Export Data (Optional);
+    end split
+endif
+
+|System|
+:Logout;
+stop
+
+@enduml

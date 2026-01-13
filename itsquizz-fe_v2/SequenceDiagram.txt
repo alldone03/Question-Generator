@@ -1,0 +1,87 @@
+@startuml
+skinparam handwritten true
+skinparam style strictuml
+
+actor "User" as user
+actor "SuperAdmin" as admin
+participant "Frontend (React)" as fe
+participant "AuthService" as auth
+participant "AssessmentService" as assess
+participant "QuizService" as quiz
+participant "AdminService" as adms
+database "Backend API" as be
+
+== Authentication Flow ==
+user -> fe: Access Application
+fe -> auth: checkAuthStatus()
+auth -> be: GET /auth/status
+be --> auth: { logged_in: boolean, user: ... }
+auth --> fe: Update Auth Context
+
+alt Not Logged In
+    fe -> user: Show Login Page
+    user -> fe: Enter Credentials
+    fe -> auth: login(credentials)
+    auth -> be: POST /auth/login
+    be --> auth: { user: ..., message: "Success" }
+    auth --> fe: Redirect to Dashboard
+else Logged In
+    fe -> fe: Redirect to Dashboard
+end
+
+== User Assessment Flow ==
+user -> fe: View Dashboard
+fe -> assess: getAssesments()
+assess -> be: GET /assessments/index
+be --> assess: List of Assessments
+assess --> fe: Render Assessment Cards
+
+user -> fe: Click "Continue Learning"
+fe -> assess: getAssesmentModule(id)
+assess -> be: GET /module/{id}
+be --> assess: List of Modules (locked/unlocked)
+assess --> fe: Show Module Map
+
+user -> fe: Click "Learning Material"
+fe -> fe: Navigate to /learning-module/{id}
+fe -> fe: Render PDF Viewer (React-PDF)
+note right of fe: "View Only Mode\n(No Download/Print)"
+
+user -> fe: Click "Start Quiz"
+fe -> quiz: getQuiz(id)
+quiz -> be: GET /quiz/{id}
+be --> quiz: Quiz Questions
+quiz --> fe: Start Quiz Interface (Timer Active)
+
+loop For each Question
+    user -> fe: Select Answer
+    fe -> fe: Save Local State
+end
+
+user -> fe: Submit Quiz / Time Up
+fe -> quiz: resultAssesment(answers)
+quiz -> be: POST /quiz/resultAssessment
+note right of be: "Backend calculates score\nCalls LLM for Feedback"
+be --> quiz: { score: 85, feedback: "..." }
+quiz --> fe: Show Result Page
+
+== Admin Flow ==
+admin -> fe: Access Admin Dashboard
+fe -> adms: getDashboardStats()
+adms -> be: GET /admin/dashboard-stats
+be --> adms: { total_users, active_assessments, ... }
+adms --> fe: Render Stats Widgets
+
+admin -> fe: View Recap
+fe -> adms: getRecap()
+adms -> be: GET /admin/recap
+be --> adms: Recap Data CSV/JSON
+adms --> fe: Display Recap Table/Export
+
+== Logout Flow ==
+user -> fe: Click Logout
+fe -> auth: logout()
+auth -> be: POST /auth/logout
+be --> auth: Success
+auth --> fe: Clear Session & Redirect to Login
+@enduml

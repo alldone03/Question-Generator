@@ -34,7 +34,7 @@ const Login = () => {
                             <LogIn size={32} />
                         </div>
                         <h1 className="text-3xl font-bold text-base-content mt-2">Login</h1>
-                        <p className="text-base-content/60">Quiz & Assessment System</p>
+                        <p className="text-base-content/60">Cogniva AI Assessment System</p>
                     </div>
 
                     {error && (

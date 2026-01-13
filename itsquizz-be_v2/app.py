@@ -21,11 +21,12 @@ load_dotenv()
 
 migrate = Migrate()  # <-- tambahkan
 
-
+origins_list = os.getenv("origins", "").split(",")
 def create_app():
+    print(os.getenv("origins"))
     app = Flask(__name__)
     CORS(app,
-         resources={r"/*": {"origins": "http://localhost"}},
+         resources={r"/*": {"origins": origins_list}},
          supports_credentials=True)
 
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")

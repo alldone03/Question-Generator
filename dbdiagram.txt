@@ -1,0 +1,69 @@
+Table users {
+  id int [pk, increment]
+  nip varchar
+  nama varchar
+  email varchar
+  password varchar
+  jabatan varchar
+  created_at timestamp
+}
+
+Table assessments {
+  id int [pk, increment]
+  nama_assessment varchar
+  jabatan varchar
+  created_at timestamp
+}
+
+Table modules {
+  id int [pk, increment]
+  assessment_id int [ref: > assessments.id]
+  nama_module varchar
+  level varchar
+  jenis_module varchar
+  waktu_pengerjaan varchar
+  feedback text
+  created_at timestamp
+}
+
+Table learning_modules {
+  id int [pk, increment]
+  module_id int [ref: > modules.id]
+  judul varchar
+  file_pdf varchar
+}
+
+Table questions {
+  id int [pk, increment]
+  module_id int [ref: > modules.id]
+  soal text
+}
+
+Table options {
+  id int [pk, increment]
+  question_id int [ref: > questions.id]
+  opsi varchar
+  is_correct boolean
+}
+
+Table scores {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  module_id int [ref: > modules.id]
+  score int
+  sisa_waktu_pengerjaan varchar
+  percobaan_ke int
+  tanggal_pengerjaan timestamp
+}
+
+Table answer_logs {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  module_id int [ref: > modules.id]
+  question_id int [ref: > questions.id]
+  selected_index int
+  correct_index int
+  is_correct boolean
+  time_spent int
+  created_at timestamp
+}

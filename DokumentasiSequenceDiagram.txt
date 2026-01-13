@@ -1,0 +1,146 @@
+@startuml
+title Sequence Diagram for ITS Quizz App
+
+autonumber
+actor "Teknisi" as Tech
+actor "Superadmin" as Admin
+participant "Frontend (itsquizz-fe_v2)" as FE
+participant "Backend (itsquizz-be_v2)" as BE
+database Database as DB
+
+== Authentication Flow (Teknisi & Superadmin) ==
+group Register (Teknisi)
+    Tech -> FE: Register (username, email, password)
+    activate FE
+    FE -> BE: POST /auth/register
+    activate BE
+    BE -> DB: Create User
+    activate DB
+    DB --> BE: User Created
+    deactivate DB
+    BE --> FE: Success Response
+    deactivate BE
+    FE --> Tech: Show Success Message
+    deactivate FE
+end
+
+group Login (Common)
+    Tech -> FE: Login (username, password)
+    note left: Admin also logs in via same flow
+    activate FE
+    FE -> BE: POST /auth/login
+    activate BE
+    BE -> DB: Validate UserCredentials
+    activate DB
+    DB --> BE: User Valid & Role (Teknisi/Admin)
+    deactivate DB
+    BE --> FE: Set Session/Cookie & Role Info
+    deactivate BE
+    FE --> Tech: Redirect to Role-specific Dashboard
+    deactivate FE
+end
+
+group Auth Status (On Load)
+    Tech -> FE: Check Auth Status
+    activate FE
+    FE -> BE: GET /auth/status
+    activate BE
+    BE --> FE: Current User Info
+    deactivate BE
+    deactivate FE
+end
+
+group Logout
+    Tech -> FE: Logout
+    activate FE
+    FE -> BE: POST /auth/logout
+    activate BE
+    BE --> FE: Success
+    deactivate BE
+    FE --> Tech: Redirect to Login
+    deactivate FE
+end
+
+== Assessment & Modules Flow (Teknisi) ==
+Tech -> FE: View Assessments Dashboard
+activate FE
+FE -> BE: GET /assessments/index
+activate BE
+BE -> DB: Fetch Assessments List
+activate DB
+DB --> BE: Assessments Data
+deactivate DB
+BE --> FE: JSON Response
+deactivate BE
+FE --> Tech: Display Assessment Cards
+deactivate FE
+
+Tech -> FE: Click on Assessment
+activate FE
+FE -> BE: GET /module/{assessmentId}
+activate BE
+BE -> DB: Fetch Modules for Assessment
+activate DB
+DB --> BE: Modules Data
+deactivate DB
+BE --> FE: JSON Response
+deactivate BE
+FE --> Tech: Display Modules List
+deactivate FE
+
+== Quiz Execution Flow (Teknisi) ==
+Tech -> FE: Start Quiz (Select Module)
+activate FE
+FE -> BE: GET /quiz/{quizId}
+activate BE
+BE -> DB: Fetch Quiz Questions
+activate DB
+DB --> BE: Questions Data
+deactivate DB
+BE --> FE: JSON Response
+deactivate BE
+FE --> Tech: Render Quiz Questions
+deactivate FE
+
+Tech -> FE: Submit Answers
+activate FE
+FE -> BE: POST /quiz/resultAssessment
+note right of FE: Payload: { answers, working_time, score, etc. }
+activate BE
+BE -> DB: Calculate Score & Save Result
+activate DB
+DB --> BE: Result Saved
+deactivate DB
+BE --> FE: Result Data & Learning Feedback
+deactivate BE
+FE --> Tech: Display Score & Feedback
+deactivate FE
+
+== Admin Dashboard Flow (Superadmin) ==
+Admin -> FE: Access Admin Dashboard
+activate FE
+FE -> BE: GET /admin/dashboard-stats
+activate BE
+BE -> DB: Aggregate Statistics
+activate DB
+DB --> BE: Stats Data
+deactivate DB
+BE --> FE: JSON Response
+deactivate BE
+FE --> Admin: Render Dashboard Charts/Stats
+deactivate FE
+
+Admin -> FE: View Recap
+activate FE
+FE -> BE: GET /admin/recap (or /admin/recap/{id})
+activate BE
+BE -> DB: Fetch Recap Data
+activate DB
+DB --> BE: Recap Data
+deactivate DB
+BE --> FE: JSON Response
+deactivate BE
+FE --> Admin: Display Detailed Recap Table
+deactivate FE
+
+@enduml

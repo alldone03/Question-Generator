@@ -1,0 +1,60 @@
+Project: ITS Quizz App (Question Generator & Assessment System)
+
+1. Scope Overview
+   The system is a comprehensive web-based assessment platform designed to evaluate and enhance the competency of technicians (Teknisi). It features a dynamic difficulty progression system, anti-cheat mechanisms, and AI-driven learning recommendations. Administrators (Superadmin) are provided with monitoring tools to track performance and progress.
+
+2. User Roles
+   - Teknisi (User): Can browse assessments, take quizzes, view results, and receive learning recommendations.
+   - Superadmin (Admin): Can view dashboard statistics, monitor user progress, and access detailed score recaps.
+
+3. Detailed Features
+
+   3.1 Authentication & Security
+   - Secure Login and Registration flow.
+   - Role-Based Access Control (RBAC) ensuring separation of User and Admin areas.
+   - Session management for persistent login states.
+
+   3.2 Assessment System (Candidate/Teknisi)
+   - **Assessment Dashboard**: List of available job-role based assessments.
+   - **Module Progression Logic**:
+     - Classification: Mudah, Sedang, Sulit.
+     - Adaptive Progression: Users must score >80 to unlock the next difficulty level.
+     - Fallback: Users scoring <=80 are recommended to retake the current level.
+   - **Pre-Quiz Information**: Display of working time and module details.
+
+   3.3 Quiz Execution Engine
+   - **Timed Quizzes**: Countdown timer that auto-submits when time expires.
+   - **Interactive Interface**:
+     - Question navigation (Next/Prev, Jump to number).
+     - Progress stepper.
+     - Answer review before submission.
+   - **Anti-Cheat Mechanisms**:
+     - Disabled Copy/Paste/Cut and Right-Click (Context Menu).
+     - Tab/Window Switching Detection: Triggers a warning modal blocking the view.
+     - Content Selection prevention (CSS select-none).
+
+   3.4 Scoring & AI Analysis
+   - Instant scoring calculation.
+   - **Smart Feedback**:
+     - Success/Fail messages customized by difficulty level.
+     - "Next Level Unlocked" notifications.
+   - **AI-Driven Recommendations**:
+     - Analysis of wrong answers.
+     - Direct mapping to Learning Modules (e.g., "Study PDF 'Maintenance.pdf', Page 15").
+
+   3.5 Admin Dashboard
+   - **Statistical Overview**: High-level metrics on assessments and participation.
+   - **Recapitulasi (Recap)**:
+     - Detailed data table of user results.
+     - Filtering by Assessment type.
+     - View scores, completion time, and attempts.
+
+   3.6 Data Management (Backend)
+   - Management of Assessments, Modules, Questions, and Options.
+   - Tracking of Answer Logs for detailed analysis.
+   - Score history tracking.
+
+4. Technical Components
+   - **Frontend**: React.js, Vite, Tailwind CSS, DaisyUI (UI Component Library).
+   - **Backend**: Python Flask (API), SQLAlchemy (ORM).
+   - **Database**: Relational DB (Users, Questions, Scores, etc.).

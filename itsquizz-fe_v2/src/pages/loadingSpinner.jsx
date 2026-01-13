@@ -19,16 +19,16 @@ const LoadingSpinner = ({ redirectPath = '/dashboard', delay = 2000 }) => {
                 <div className="flex items-center">
 
                     {/* Logo with OKLCH Color */}
-                    <div
+                    {/* <div
                         className="h-16 w-[180px] logo-oklch"
                         aria-label="myITS Logo"
-                    />
+                    /> */}
 
                     {/* Quiz Text with requested classes */}
                     {/* Note: tx-white is placed here, so we wrap it in a blue background to make it visible */}
                     <div className="px-2 py-2 rounded-xl flex items-center justify-center">
                         <p className="font-bold text-black text-5xl tracking-[2px] mb-0 ml-[10px]">
-                            Quiz
+                            Cogniva
                         </p>
                     </div>
                 </div>
