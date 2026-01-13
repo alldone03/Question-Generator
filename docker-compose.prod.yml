@@ -62,3 +62,4 @@ volumes:
 networks:
   app_network:
     driver: bridge
+NbVd4_;r~Q0=B8n+
