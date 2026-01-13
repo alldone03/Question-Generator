@@ -1,7 +1,13 @@
 import axios from "axios";
 
+// Determine Base URL
+// 1. If VITE_API_URL is set (e.g. from Docker), use it.
+// 2. If in Production (PROD=true), default to relative path "/" because we use Nginx proxy.
+// 3. If in Development, default to localhost:5000.
+const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/" : "http://localhost:5000");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: baseURL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
