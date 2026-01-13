@@ -60,6 +60,6 @@ if __name__ == "__main__":
         seed_from_csv(csv_path)
         
         # seed_from_csv(r'ITS Quiz Soal - Teknisi Sarpras.csv', assessment_id=1)
-        print("Seeding scores...")
-        seed_scores()
+        # print("Seeding scores...")
+        # seed_scores()
         print("Re-seeder selesai")
