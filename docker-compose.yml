@@ -27,6 +27,7 @@ services:
       - DATABASE_URL=mysql+pymysql://user:userpassword@db:3306/itsquizz_db
       - SECRET_KEY=supersecret123
       - SESSION_TYPE=filesystem
+      - origins=http://localhost,http://127.0.0.1
     depends_on:
       - db
     ports:
