@@ -27,7 +27,6 @@ services:
       - DATABASE_URL=mysql+pymysql://user:userpassword@db:3306/itsquizz_db
       - SECRET_KEY=prod_secret_key_change_this_via_env_file
       - SESSION_TYPE=filesystem
-      # Since Nginx proxies to backend, requests appear local or trusted
       - origins=*
     volumes:
       - backend_uploads:/app/uploads
@@ -42,9 +41,7 @@ services:
       context: ./itsquizz-fe_v2
       dockerfile: Dockerfile
       args:
-        # Set API URL to root so requests are relative (e.g. /auth/login)
-        # Nginx will intercept these and proxy to backend
-        VITE_API_URL: /
+        - VITE_API_URL=/
     container_name: itsquizz-fe
     restart: always
     ports:
@@ -55,11 +52,9 @@ services:
       - app_network
 
 volumes:
-  mysql_data:
-  backend_uploads:
-
+  mysql_data: null
+  backend_uploads: null
 
 networks:
   app_network:
     driver: bridge
-NbVd4_;r~Q0=B8n+
