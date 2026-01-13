@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000", // Update this if your backend port is different
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -34,6 +34,42 @@ export const quizService = {
 export const adminService = {
   getDashboardStats: () => api.get("/admin/dashboard-stats"),
   getRecap: (assessmentId = null) => api.get(assessmentId ? `/admin/recap/${assessmentId}` : "/admin/recap"),
+};
+
+export const crudService = {
+  // Assessment
+  createAssessment: (data) => api.post("/management/assessments", data),
+  getAssessments: () => api.get("/management/assessments"),
+  updateAssessment: (id, data) => api.put(`/management/assessments/${id}`, data),
+  deleteAssessment: (id) => api.delete(`/management/assessments/${id}`),
+
+  // Module
+  createModule: (data) => api.post("/management/modules", data),
+  getModules: (assessmentId) => api.get(`/management/assessments/${assessmentId}/modules`),
+  updateModule: (id, data) => api.put(`/management/modules/${id}`, data),
+  deleteModule: (id) => api.delete(`/management/modules/${id}`),
+
+  // Learning Module
+  createLearningModule: (data) => api.post("/management/learning-modules", data, {
+    headers: { "Content-Type": "multipart/form-data" }
+  }),
+  getLearningModules: (moduleId) => api.get(`/management/modules/${moduleId}/learning-modules`),
+  updateLearningModule: (id, data) => api.put(`/management/learning-modules/${id}`, data, {
+    headers: { "Content-Type": "multipart/form-data" }
+  }),
+  deleteLearningModule: (id) => api.delete(`/management/learning-modules/${id}`),
+
+  // Question
+  createQuestion: (data) => api.post("/management/questions", data),
+  getQuestions: (moduleId) => api.get(`/management/modules/${moduleId}/questions`),
+  updateQuestion: (id, data) => api.put(`/management/questions/${id}`, data),
+  deleteQuestion: (id) => api.delete(`/management/questions/${id}`),
+
+  // Option
+  createOption: (data) => api.post("/management/options", data),
+  getOptions: (questionId) => api.get(`/management/questions/${questionId}/options`),
+  updateOption: (id, data) => api.put(`/management/options/${id}`, data),
+  deleteOption: (id) => api.delete(`/management/options/${id}`),
 };
 
 export default api;

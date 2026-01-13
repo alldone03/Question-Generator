@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, LayoutDashboard, Settings } from 'lucide-react';
+import { LogOut, User, LayoutDashboard, Settings, Layers } from 'lucide-react';
 
 const Sidebar = () => {
     const { user, logout } = useAuth();
@@ -44,6 +44,17 @@ const Sidebar = () => {
                             >
                                 <Settings size={20} />
                                 Admin
+                            </Link>
+                        </li>
+                    )}
+                    {user?.jabatan === 'SuperAdmin' && (
+                        <li>
+                            <Link
+                                to="/admin/management"
+                                className={`${isActive('/admin/management') ? 'active' : ''} font-medium gap-3`}
+                            >
+                                <Layers size={20} />
+                                Manage Data
                             </Link>
                         </li>
                     )}

@@ -6,4 +6,6 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey("modules.id"), nullable=False)
     soal = db.Column(db.Text, nullable=False)
+
+    options = db.relationship("Option", backref="question", lazy=True, cascade="all, delete-orphan")
     

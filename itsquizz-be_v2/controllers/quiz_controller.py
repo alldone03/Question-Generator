@@ -367,7 +367,7 @@ import os
 # Load isi file .env
 load_dotenv()
 LLM_API_URL = os.getenv("llm_url")
-import requests
+
 def call_llm(prompt: str) -> str:
     """
     Pengganti call_llm:

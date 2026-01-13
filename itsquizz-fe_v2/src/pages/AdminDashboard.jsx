@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
-import { ClipboardList, Users, ArrowUpRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ClipboardList, Users, ArrowUpRight, CheckCircle2, AlertCircle, Layers } from 'lucide-react';
 import { adminService } from '../services/api';
 
 /*
@@ -74,6 +74,9 @@ const AdminDashboard = () => {
                     <Link to="/admin/recap" className="btn btn-primary text-white gap-2 normal-case shadow-lg">
                         <ClipboardList size={18} /> Lihat Rekap Penilaian
                     </Link>
+                    {/* <Link to="/admin/management" className="btn btn-secondary text-white gap-2 normal-case shadow-lg ml-2">
+                        <Layers size={18} /> Manage Data
+                    </Link> */}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

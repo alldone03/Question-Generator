@@ -1,10 +1,8 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from config.database import db
 from flask_migrate import Migrate
 from flask_session import Session
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-
 
 from models import *
 
@@ -13,6 +11,7 @@ from routes.assessment_routes import assessment_bp
 from routes.module_routes import module_bp
 from routes.quiz_routes import quiz_bp
 from routes.admin_routes import admin_bp
+from routes.crud_routes import crud_bp
 
 from dotenv import load_dotenv
 import os
@@ -33,13 +32,6 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SESSION_TYPE'] = os.getenv("SESSION_TYPE")
-    jwt = JWTManager(app)
-
-    BLACKLIST = set()
-
-    @jwt.token_in_blocklist_loader
-    def check_if_token_revoked(jwt_header, jwt_payload):
-        return jwt_payload["jti"] in BLACKLIST
 
     # Init DB
     db.init_app(app)
@@ -56,6 +48,11 @@ def create_app():
     app.register_blueprint(module_bp, url_prefix="/module")
     app.register_blueprint(quiz_bp, url_prefix="/quiz")
     app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(crud_bp, url_prefix="/management")
+
+    @app.route('/uploads/<path:filename>')
+    def serve_uploads(filename):
+        return send_from_directory(os.path.join(app.root_path, 'uploads'), filename)
 
     return app
 

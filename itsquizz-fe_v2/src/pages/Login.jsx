@@ -45,7 +45,7 @@ const Login = () => {
 
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <div className="form-control">
-                            <label className="label">
+                            <label className="label m-1">
                                 <span className="label-text font-medium">Email</span>
                             </label>
                             <div className="relative">
@@ -64,7 +64,7 @@ const Login = () => {
                         </div>
 
                         <div className="form-control">
-                            <label className="label">
+                            <label className="label m-1">
                                 <span className="label-text font-medium">Password</span>
                             </label>
                             <div className="relative">

@@ -11,6 +11,7 @@ import QuizPage from '../pages/QuizPage';
 import PuzzleAC from '../pages/puzzelac';
 import AdminDashboard from '../pages/AdminDashboard';
 import AdminRecap from '../pages/AdminRecap';
+import AdminCRUD from '../pages/AdminCRUD';
 import LoadingSpinner from '../pages/loadingSpinner';
 
 const AppRoutes = () => {
@@ -61,6 +62,11 @@ const AppRoutes = () => {
             <Route path="/admin/recap/:assessment_id" element={
                 <PrivateRoute adminOnly>
                     <AdminRecap />
+                </PrivateRoute>
+            } />
+            <Route path="/admin/management" element={
+                <PrivateRoute adminOnly>
+                    <AdminCRUD />
                 </PrivateRoute>
             } />
 
