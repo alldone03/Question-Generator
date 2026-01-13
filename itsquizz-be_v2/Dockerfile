@@ -12,17 +12,14 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     gcc \
+    netcat-openbsd \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-# RUN flask db init # only first action
-# RUN flask db migrate -m "add feedback to module"
-# RUN flask db upgrade
-# RUN python -m seeders.run
-
 
 # Adding missing dependencies used in app.py
 
@@ -30,8 +27,15 @@ RUN pip install -r requirements.txt
 # Copy project
 COPY . .
 
+# Copy entrypoint script
+COPY entrypoint.sh .
+RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
+
 # Expose port
 EXPOSE 5000
+
+# Set entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Start application
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
