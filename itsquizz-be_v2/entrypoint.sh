@@ -8,8 +8,13 @@ done
 echo "Database is ready!"
 
 # Run migrations/seeders
-echo "Running seeders..."
-python -m seeders.run
+# Run migrations/seeders
+if [ "$RUN_SEEDER" = "true" ]; then
+    echo "Running seeders..."
+    python -m seeders.run
+else
+    echo "Skipping seeders..."
+fi
 
 # Start the application
 exec "$@"

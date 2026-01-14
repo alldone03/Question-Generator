@@ -21,12 +21,13 @@ load_dotenv()
 migrate = Migrate()  # <-- tambahkan
 jwt = JWTManager()
 
-origins_list = os.getenv("origins", "").split(",")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",")
+
 def create_app():
-    print(os.getenv("origins"))
+    # print(os.getenv("origins")) # Removed debug print
     app = Flask(__name__)
     CORS(app,
-         resources={r"/*": {"origins": origins_list}},
+         origins=ALLOWED_ORIGINS,
          supports_credentials=True)
 
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev_secret_key_fallback")

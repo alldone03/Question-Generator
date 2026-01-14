@@ -1,20 +1,18 @@
-version: '3.8'
+version: '3.9'
 
 services:
   # MySQL Database
   db:
     image: mysql:8.0
     container_name: itsquizz-db
-    restart: always
-    environment:
-      MYSQL_DATABASE: itsquizz_db
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_PASSWORD: userpassword
-      MYSQL_USER: user
+    restart: unless-stopped
+    env_file: .env
+    command: >
+      --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - app_network
+      - internal_net
 
   # Backend Service (Flask + Gunicorn)
   backend:
@@ -22,18 +20,20 @@ services:
       context: ./itsquizz-be_v2
       dockerfile: Dockerfile
     container_name: itsquizz-be
-    restart: always
+    restart: unless-stopped
+    env_file: .env
     environment:
-      - DATABASE_URL=mysql+pymysql://user:userpassword@db:3306/itsquizz_db
-      - SECRET_KEY=prod_secret_key_change_this_via_env_file
-      - SESSION_TYPE=filesystem
-      - origins=*
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - SESSION_TYPE=${SESSION_TYPE}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - RUN_SEEDER=${RUN_SEEDER}
     volumes:
       - backend_uploads:/app/uploads
     depends_on:
       - db
     networks:
-      - app_network
+      - internal_net
 
   # Frontend Service (Nginx serving React)
   frontend:
@@ -41,20 +41,30 @@ services:
       context: ./itsquizz-fe_v2
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=/
+        - VITE_API_URL=${VITE_API_URL}
     container_name: itsquizz-fe
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      # Mount the custom nginx config from host to container
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Check if certs exist on host, map them
+      - ./certs:/etc/nginx/certs:ro
     depends_on:
       - backend
     networks:
-      - app_network
+      - internal_net
+      - public_net
 
 volumes:
   mysql_data: null
   backend_uploads: null
 
 networks:
-  app_network:
+  internal_net:
+    driver: bridge
+    internal: true # Not accessible from outside
+  public_net:
     driver: bridge
