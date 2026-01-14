@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, jsonify
 from config.database import db
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -29,8 +29,8 @@ def create_app():
          resources={r"/*": {"origins": origins_list}},
          supports_credentials=True)
 
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-    app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY") # Use same key or separate ENV
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev_secret_key_fallback")
+    app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY", "dev_secret_key_fallback") # Use same key or separate ENV
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
@@ -44,6 +44,31 @@ def create_app():
     # Init JWT
     jwt.init_app(app)
 
+    # JWT Configuration
+    app.config['JWT_TOKEN_LOCATION'] = ['headers']
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False # Disable CSRF as we use Bearer tokens
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return jsonify({
+            'message': 'Signature verification failed.',
+            'error': 'invalid_token'
+        }), 422
+
+    @jwt.unauthorized_loader
+    def missing_token_callback(error):
+        return jsonify({
+            "description": "Request does not contain an access token.",
+            'error': 'authorization_required'
+        }), 401
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return jsonify({
+            'message': 'The token has expired.',
+            'error': 'token_expired'
+        }), 401
+
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(assessment_bp, url_prefix="/assessments")
     app.register_blueprint(module_bp, url_prefix="/module")
@@ -54,6 +79,15 @@ def create_app():
     @app.route('/uploads/<path:filename>')
     def serve_uploads(filename):
         return send_from_directory(os.path.join(app.root_path, 'uploads'), filename)
+
+    @app.route('/debug-config')
+    def debug_config():
+        return jsonify({
+            "JWT_SECRET_KEY_SET": bool(app.config.get('JWT_SECRET_KEY')),
+            "SECRET_KEY_SET": bool(app.config.get('SECRET_KEY')),
+            "JWT_TOKEN_LOCATION": app.config.get('JWT_TOKEN_LOCATION'),
+            "ENV_SECRET_KEY": os.getenv("SECRET_KEY")
+        })
 
     return app
 

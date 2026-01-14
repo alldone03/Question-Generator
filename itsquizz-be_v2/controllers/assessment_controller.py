@@ -1,5 +1,6 @@
 
-from flask import request,session, jsonify
+from flask import request, jsonify
+from flask_jwt_extended import get_jwt_identity
 
 from config.database import db
 from models.assessment import Assessment
@@ -9,8 +10,8 @@ from models.score import Score
 
 
 def index():
-    # Ambil user dari session
-    user_id = session.get("user_id")
+    # Ambil user dari JWT
+    user_id = get_jwt_identity()
     if not user_id:
         return jsonify({"assessments": []}), 200
 

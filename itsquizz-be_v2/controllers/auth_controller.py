@@ -52,7 +52,7 @@ def login_user():
     if not user or not verify_password(user.password, password):
         return jsonify({"message": "Email atau password salah"}), 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
 
     return jsonify({
         "message": "Login berhasil",    

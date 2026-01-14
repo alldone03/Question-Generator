@@ -1,7 +1,8 @@
 from models import Module, Score
 
 from config.database import db
-from flask import request, session, jsonify
+from flask import request, jsonify
+from flask_jwt_extended import get_jwt_identity
 
 
 
@@ -11,7 +12,7 @@ def index(assessment_id):
         .filter_by(assessment_id=assessment_id)
         .all()
     )
-    user_id = session.get('user_id')
+    user_id = get_jwt_identity()
 
     result = []
     prev_score = None

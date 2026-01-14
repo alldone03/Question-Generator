@@ -1,4 +1,5 @@
-from flask import request, session, jsonify
+from flask import request, jsonify
+from flask_jwt_extended import get_jwt_identity
 
 from config.database import db
 from models.user import User
@@ -158,7 +159,7 @@ def _format_wrong_for_prompt(wrong_summary):
 
 def resultAssessment():
     data = request.get_json()
-    user_id = session.get("user_id")
+    user_id = get_jwt_identity()
 
     if not user_id:
         return jsonify({"message": "User tidak ditemukan"}), 401
