@@ -7,7 +7,14 @@ from controllers.crud_controller import (
     create_option, get_options, update_option, delete_option
 )
 
+from flask_jwt_extended import jwt_required
+
 crud_bp = Blueprint("crud_bp", __name__)
+
+@crud_bp.before_request
+@jwt_required()
+def before_request():
+    pass
 
 # Assessment
 crud_bp.route("/assessments", methods=["POST"])(create_assessment)

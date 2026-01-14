@@ -1,4 +1,5 @@
-from flask import request, session, jsonify
+from flask import request, jsonify
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 from config.database import db
 from utils.hash import hash_password, verify_password
@@ -51,29 +52,30 @@ def login_user():
     if not user or not verify_password(user.password, password):
         return jsonify({"message": "Email atau password salah"}), 401
 
-    session["user_id"] = user.id
+    access_token = create_access_token(identity=user.id)
 
     return jsonify({
         "message": "Login berhasil",    
-        "user": user.to_dict()
+        "user": user.to_dict(),
+        "access_token": access_token
     }), 200
 
 # LOGOUT
 def logout_user():
-    session.pop("user_id", None)
+    # Client side just removes the token
     return jsonify({"message": "Logout berhasil"}), 200
 
 
 # CHECK STATUS
+@jwt_required()
 def check_status():
-    user_id = session.get("user_id")
-
-    if user_id:
-        user = db.session.get(User, user_id)
-        if user:
-            return jsonify({
-                "logged_in": True,
-                "user": user.to_dict()
-            }), 200
+    current_user_id = get_jwt_identity()
+    
+    user = db.session.get(User, current_user_id)
+    if user:
+        return jsonify({
+            "logged_in": True,
+            "user": user.to_dict()
+        }), 200
 
     return jsonify({"logged_in": False}), 200

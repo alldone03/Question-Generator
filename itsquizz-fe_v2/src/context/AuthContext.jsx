@@ -14,6 +14,14 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const checkAuthStatus = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setUser(null);
+            setIsAuthenticated(false);
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await authService.getStatus();
             if (response.data.logged_in) {
@@ -22,10 +30,12 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setUser(null);
                 setIsAuthenticated(false);
+                localStorage.removeItem("token");
             }
         } catch (error) {
             setUser(null);
             setIsAuthenticated(false);
+            localStorage.removeItem("token");
         } finally {
             setLoading(false);
         }
@@ -33,7 +43,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (credentials) => {
         const response = await authService.login(credentials);
-        if (response.data.user) {
+        if (response.data.access_token) {
+            localStorage.setItem("token", response.data.access_token);
             setUser(response.data.user);
             setIsAuthenticated(true);
         }
@@ -46,8 +57,10 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await authService.logout();
+            // Optional: Call backend to blacklist token
+            // await authService.logout(); 
         } finally {
+            localStorage.removeItem("token");
             setUser(null);
             setIsAuthenticated(false);
         }

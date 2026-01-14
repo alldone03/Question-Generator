@@ -1,9 +1,9 @@
 flask 
 # flask_sqlalchemy 
-flask_session 
+flask_session
 werkzeug
 python-dotenv
-flask-session 
+flask-jwt-extended
 sqlalchemy
 flask-cors
 flask-migrate
