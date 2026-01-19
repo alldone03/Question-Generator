@@ -15,28 +15,14 @@ jobs:
     - name: Execute remote commands via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.PORT || 22 }}
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT || 22 }}
         script: |
-          # Hentikan execution jika ada error
           set -e
-          
-          # Masuk ke direktori project (sesuaikan path ini di server Anda)
-          # Contoh: cd /var/www/Question-Generator
-          cd ${{ secrets.PROJECT_PATH }}
-          
-          # Pull kode terbaru
-          echo "Pulling latest code..."
-          git pull origin main || git pull origin master
-          
-          # Rebuild dan restart container production
-          echo "Rebuilding and restarting containers..."
-          docker-compose -f docker-compose.prod.yml down
-          docker-compose -f docker-compose.prod.yml up -d --build
-          
-          # Bersihkan image yang tidak terpakai untuk menghemat space
-          docker image prune -f
-          
+          cd Question-Generator
+          git pull
+          docker compose down --rmi local -v
+          docker compose -f docker-compose.prod.yml up -d
           echo "Deployment successful!"
