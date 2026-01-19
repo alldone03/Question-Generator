@@ -1,11 +1,12 @@
 #!/bin/sh
 
 # Wait for database to be ready
-echo "Waiting for database connection..."
+echo "Waiting for database connection (db:3306)..."
 while ! nc -z db 3306; do
-  sleep 0.1
+  echo "Database not ready yet, retrying in 2 seconds..."
+  sleep 2
 done
-echo "Database is ready!"
+echo "Database is ready! Starting application..."
 
 # Run migrations/seeders
 # Run migrations/seeders
