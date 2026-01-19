@@ -4,7 +4,7 @@ import axios from "axios";
 // 1. If VITE_API_URL is set (e.g. from Docker), use it.
 // 2. If in Production (PROD=true), default to relative path "/" because we use Nginx proxy.
 // 3. If in Development, default to localhost:5000.
-const baseURL = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/" : "http://localhost:5000")) + "/api";
+const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/" : "http://localhost:5000");
 
 const api = axios.create({
   baseURL: baseURL,
@@ -16,6 +16,11 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  // Automatically prepend /api if not present
+  if (config.url && !config.url.startsWith("/api")) {
+    config.url = config.url.startsWith("/") ? `/api${config.url}` : `/api/${config.url}`;
+  }
+
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
