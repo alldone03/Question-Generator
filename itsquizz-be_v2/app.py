@@ -70,18 +70,18 @@ def create_app():
             'error': 'token_expired'
         }), 401
 
-    app.register_blueprint(auth_bp, url_prefix="/auth")
-    app.register_blueprint(assessment_bp, url_prefix="/assessments")
-    app.register_blueprint(module_bp, url_prefix="/module")
-    app.register_blueprint(quiz_bp, url_prefix="/quiz")
-    app.register_blueprint(admin_bp, url_prefix="/admin")
-    app.register_blueprint(crud_bp, url_prefix="/management")
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(assessment_bp, url_prefix="/api/assessments")
+    app.register_blueprint(module_bp, url_prefix="/api/module")
+    app.register_blueprint(quiz_bp, url_prefix="/api/quiz")
+    app.register_blueprint(admin_bp, url_prefix="/api/admin")
+    app.register_blueprint(crud_bp, url_prefix="/api/management")
 
-    @app.route('/uploads/<path:filename>')
+    @app.route('/api/uploads/<path:filename>')
     def serve_uploads(filename):
         return send_from_directory(os.path.join(app.root_path, 'uploads'), filename)
 
-    @app.route('/debug-config')
+    @app.route('/api/debug-config')
     def debug_config():
         return jsonify({
             "JWT_SECRET_KEY_SET": bool(app.config.get('JWT_SECRET_KEY')),
