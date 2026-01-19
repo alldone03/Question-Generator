@@ -23,6 +23,8 @@ jobs:
           set -e
           cd Question-Generator
           git pull
-          docker compose down --rmi local -v
-          docker compose -f docker-compose.prod.yml up -d
+          # Down tanpa flag -v agar volume database (mysql_data) tidak terhapus
+          docker compose -f docker-compose.prod.yml down
+          # Up dengan --build agar container baru menggunakan kode terbaru dari git pull
+          docker compose -f docker-compose.prod.yml up -d --build
           echo "Deployment successful!"
