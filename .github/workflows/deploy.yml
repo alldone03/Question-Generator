@@ -27,4 +27,5 @@ jobs:
           docker compose -f docker-compose.prod.yml down
           # Up dengan --build agar container baru menggunakan kode terbaru dari git pull
           docker compose -f docker-compose.prod.yml up -d --build
+          sudo ufw allow 443
           echo "Deployment successful!"
