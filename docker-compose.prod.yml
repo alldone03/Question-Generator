@@ -78,3 +78,5 @@ networks:
     # internal: true # Not accessible from outside
   public_net:
     driver: bridge
+  web:
+    driver: bridge
