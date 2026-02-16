@@ -78,4 +78,3 @@ networks:
     driver: bridge
   public_net:
     driver: bridge
-  web:
