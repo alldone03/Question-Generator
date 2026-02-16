@@ -22,6 +22,8 @@ services:
     container_name: itsquizz-be
     restart: unless-stopped
     env_file: .env
+    ports:
+      - "9002:5000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -45,8 +47,8 @@ services:
         - VITE_API_URL=${VITE_API_URL}
     container_name: itsquizz-fe
     restart: unless-stopped
-    # ports:
-      # - "3000:80"
+    ports:
+      - "9001:80"
     #   - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
